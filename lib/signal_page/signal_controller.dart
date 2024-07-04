@@ -73,10 +73,12 @@ class SignalController extends GetxController {
     GattCharacteristic? target;
     outer:
     for (var service in services) {
-      for (var characteristic in service.characteristics) {
-        if (characteristic.uuid == targetCharateristic) {
-          target = characteristic;
-          break outer;
+      if(service.uuid == targetService){
+          for (var characteristic in service.characteristics) {
+            if (characteristic.uuid == targetCharateristic) {
+              target = characteristic;
+              break outer;
+            }
         }
       }
     }

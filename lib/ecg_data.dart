@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -14,7 +15,6 @@ class ECGData {
 
   /// sample value
   double value;
-
   /// calculated from timestamp, used in graph rendering
   late int index;
 
@@ -29,10 +29,10 @@ class ECGData {
   static List<ECGData> fromPacket(Uint8List data) {
     final bytes = ByteData.sublistView(data);
     List<ECGData> result = [];
-    final count = (bytes.lengthInBytes / 8).floor();
+    final count = (bytes.lengthInBytes / 8).floor() + 1;
     for (var i = 0; i < count; i++) {
-      final timestamp = bytes.getUint32(i * 8);
-      final value = bytes.getFloat32(i * 8 + 4);
+      final timestamp = bytes.getUint32(i * 8 + 1);
+      final value = bytes.getInt16(i * 8 + 1 + 4).toDouble() / 256;
       result.add(ECGData(timestamp, value));
     }
     return result;

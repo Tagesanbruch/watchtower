@@ -28,3 +28,19 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// android {
+//     signingConfigs {
+//         release {
+//             storeFile file('C:\\Users\\aa\\upload-keystore.jks')
+//             storePassword 'abc1234567'
+//             keyPassword 'abc1234567'
+//         }
+//     }
+
+//     buildTypes {
+//         release {
+//             signingConfig signingConfigs.release
+//         }
+//     }
+// }

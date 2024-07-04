@@ -59,7 +59,7 @@ class BluetoothPage extends StatelessWidget {
                         }
                         controller.bufferController.reset();
                         Get.put(SignalController(
-                            controller.discoveredEventArgs[i].peripheral,
+                            item.peripheral,
                             controller.bufferController));
                         Get.toNamed("/signal",
                             arguments: SignalSource(SignalSourceType.ble,

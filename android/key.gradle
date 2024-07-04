@@ -1,0 +1,4 @@
+storePassword=abc1234567
+keyPassword=abc1234567
+keyAlias=upload
+storeFile='C:\\Users\\aa\\upload-keystore.jks'
