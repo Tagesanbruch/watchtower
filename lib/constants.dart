@@ -16,7 +16,7 @@ const packLength = 50;
 /// sample rate
 // TODO: decide sample rate
 const int fs =
-    333; // for csv data exported from https://archive.physionet.org/cgi-bin/atm/ATM
+    1000; // for csv data exported from https://archive.physionet.org/cgi-bin/atm/ATM
 
 /// pipelines for pre-processing
 final pipelines = [CleanPT(fs)];
@@ -26,7 +26,7 @@ final detector = PtPeakDetector(fs);
 
 const int delayMs = 1000 ~/ fs * packLength;
 
-const int graphBufferLength = 600;
+const int graphBufferLength = 3000;
 
 const int peakBufferCapacity = 12;
 

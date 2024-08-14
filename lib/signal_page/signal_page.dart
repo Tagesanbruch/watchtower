@@ -50,7 +50,7 @@ class SignalPage extends StatelessWidget {
               children: [
                 Obx(() => bufferController.percentage.value != 1.0
                     ? TweenAnimationBuilder(
-                        duration: const Duration(milliseconds: 1000),
+                        duration: const Duration(milliseconds: 5000),
                         curve: Curves.easeInOut,
                         tween: Tween<double>(
                             begin: 0, end: bufferController.percentage.value),
@@ -94,7 +94,7 @@ class SignalPage extends StatelessWidget {
                     BufferControllerState.saving => null
                   },
                   label: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 1500),
                       transitionBuilder:
                           (Widget child, Animation<double> animation) =>
                               FadeTransition(
