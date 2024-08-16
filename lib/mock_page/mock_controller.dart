@@ -90,4 +90,32 @@ class MockPageController extends GetxController {
       await recordController.addRecord(record);
     }
   }
+
+  Future<void> promptExportDB() async {
+    final String? path = (await FilePicker.platform.pickFiles(
+            allowMultiple: false,
+            type: FileType.custom,
+            allowedExtensions: ["csv"],
+            dialogTitle: "Select mock file"))
+        ?.files[0]
+        .path;
+    if (path != null) {
+      final file = File(path);
+      final content = file
+          .readAsStringSync(); // TODO: might block for a while, use async and loading indicator to improve experience
+      final csv = const CsvToListConverter(eol: "\n").convert(content);
+
+      final data = csv
+          .sublist(2)
+          .mapIndexed((index, element) => ECGData(index, element[1] as double))
+          .toList();
+
+      // TODO: decide detector
+      final detectResult = bench.detectWithPt(data);
+      final record = Record(DateTime.now(),
+          Duration(milliseconds: data.length * 1000 ~/ bench.fs), data,
+          annotations: detectResult);
+      await recordController.addRecord(record);
+    }
+  }
 }
