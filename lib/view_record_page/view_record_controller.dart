@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 // import 'package:share_extend/share_extend.dart';
 
 import '../constants.dart';
@@ -98,10 +98,9 @@ class ViewRecordController extends GetxController {
         }
 
         await file.writeAsString(buffer.toString());
+        // Share the file
+        await Share.shareXFiles([XFile(file.path)], text: 'record file');
         snackbar("Success", "Record saved successfully.");
-            // Share the file
-        // ShareExtend.share(file.path, "file");
-        // await Share.shareXFiles([XFile(file.path)], text: 'record file');
     } on PlatformException catch (e) {
       snackbar("Error", "Failed to open file dialog: $e");
     }
