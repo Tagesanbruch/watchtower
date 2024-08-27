@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:watchtower/main.dart';
 
 import 'bluetooth_page/bluetooth_page.dart';
+import 'user_page/user_page.dart';
+import 'user_page/login_page.dart';
 import 'mock_page/mock_page.dart';
 import 'record_page/record_page.dart';
 import 'signal_page/signal_page.dart';
@@ -22,7 +25,12 @@ final List<AppPage> navigationList = [
       Icons.save_rounded),
   AppPage("viewRecord", "View Signal Record", () => ViewRecordPage(),
       Icons.troubleshoot, Icons.troubleshoot_outlined,
-      hidden: true)
+      hidden: true),
+  AppPage("user", "User Page", () => UserPage(), 
+      Icons.card_membership, Icons.card_membership_outlined
+  ),
+  AppPage("login", "Login", () => LoginPage(),
+      Icons.local_activity, Icons.local_activity_outlined, hidden: true)//TODO: change Icon
 ];
 
 /// hide pages marked with "hidden: true"
