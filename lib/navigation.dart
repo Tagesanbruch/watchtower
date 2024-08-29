@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:watchtower/main.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'bluetooth_page/bluetooth_page.dart';
 import 'user_page/user_page.dart';
+import 'user_page/register_page.dart';
 import 'user_page/login_page.dart';
 import 'mock_page/mock_page.dart';
 import 'record_page/record_page.dart';
@@ -26,11 +28,14 @@ final List<AppPage> navigationList = [
   AppPage("viewRecord", "View Signal Record", () => ViewRecordPage(),
       Icons.troubleshoot, Icons.troubleshoot_outlined,
       hidden: true),
-  AppPage("user", "User Page", () => UserPage(), 
-      Icons.card_membership, Icons.card_membership_outlined
-  ),
-  AppPage("login", "Login", () => LoginPage(),
-      Icons.local_activity, Icons.local_activity_outlined, hidden: true)//TODO: change Icon
+  AppPage("user", "User Page", () => UserPage(), Icons.card_membership,
+      Icons.card_membership_outlined),
+  AppPage("login", "Login", () => LoginPage(), Icons.local_activity,
+      Icons.local_activity_outlined,
+      hidden: true), //TODO: change Icon
+  AppPage("register", "Register", () => RegisterPage(), Icons.local_activity,
+      Icons.local_activity_outlined,
+      hidden: true) //TODO: change Icon
 ];
 
 /// hide pages marked with "hidden: true"
@@ -91,12 +96,14 @@ class DefaultAppBar extends StatelessWidget implements PreferredSizeWidget {
 /// function for making a page
 /// injects appbar and routing information
 Widget makePage(String title, Widget body,
-        {bool showDrawerButton = true,
-        List<Widget> actions = const [],
-        Widget? floatingActionButton}) =>
-    Scaffold(
-      appBar: DefaultAppBar(title,
-          showDrawerButton: showDrawerButton, actions: actions),
-      body: SafeArea(child: body),
-      floatingActionButton: floatingActionButton,
-    );
+    {bool showDrawerButton = true,
+    List<Widget> actions = const [],
+    Widget? floatingActionButton}) {
+//   EasyLoading.init(); //TODO: fix the EasyLoading Initial
+  return Scaffold(
+    appBar: DefaultAppBar(title,
+        showDrawerButton: showDrawerButton, actions: actions),
+    body: SafeArea(child: body),
+    floatingActionButton: floatingActionButton,
+  );
+}

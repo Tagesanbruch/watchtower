@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../navigation.dart';
-import 'login_controller.dart';
+import 'register_controller.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
-  final controller = Get.put(LoginController());
-  bool ShowPassword = false;
+class RegisterPage extends StatelessWidget {
+  RegisterPage({super.key});
+  final controller = Get.put(RegisterController());
   TextEditingController _unameController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
+  bool ShowPassword = false;
+
   Function(String) usernameValidator = (String username) {
     if (username.isEmpty) {
       return 'Username empty';
@@ -23,7 +24,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return makePage(
-      "Login",
+      "Register",
       Form(
         // key: ?key,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -101,11 +102,9 @@ class LoginPage extends StatelessWidget {
                   constraints: BoxConstraints.expand(height: 55.0),
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
-                    onPressed: () {
-                      return controller.onLogin(_unameController.toString(), _pwdController.toString());
-                    },
+                    onPressed: null,
                     // textColor: Colors.white,
-                    child: Text("Login"),
+                    child: Text("Register"),
                   ),
                 ),
                 const SizedBox(
@@ -115,9 +114,7 @@ class LoginPage extends StatelessWidget {
                   constraints: BoxConstraints.expand(height: 55.0),
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
-                    onPressed: (){
-                      Get.toNamed("/register");
-                    },
+                    onPressed: null,
                     // textColor: Colors.white,
                     child: Text("Register"),
                   ),
@@ -130,5 +127,6 @@ class LoginPage extends StatelessWidget {
       showDrawerButton: false, 
     );
   }
+
   
 }

@@ -1,27 +1,32 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import '../web_request/web_request.dart';
+import '../signal_page/buffer_controller.dart';
+
 // TODO: timeout and stop
 
-class LoginController extends GetxController
+class RegisterController extends GetxController
     with GetSingleTickerProviderStateMixin {
+  final BufferController bufferController = Get.find();
 
   late AnimationController spinnerController;
 
+  var discovering = false.obs;
+  var discoveredEventArgs = [].obs;
+
   late final StreamSubscription stateChangedSubscription;
   late final StreamSubscription discoveredSubscription;
-  
-  var webinfoInstance = webinfo();
 
   void onStartUp() async {
+    // TODO: reduce logging level after debugging
+    // CentralManager.instance.logLevel = Level.WARNING;
     WidgetsFlutterBinding.ensureInitialized();
     spinnerController.stop();
-    EasyLoading.init();
+    // await CentralManager.instance.setUp();
+    // state.value = await CentralManager.instance.getState();
+    await startDiscovery();
   }
 
   void onCrashed(Object error, StackTrace stackTrace) {
@@ -32,37 +37,23 @@ class LoginController extends GetxController
     );
   }
 
-  void onLogin(String username, String password) async {
-    //  if (pwState.validate()) {
-    
-      // EasyLoading.show(status: "Logining..."); //TODO: fix the EasyLoading Initial
-      // User? user;
-      // try {
-      //   user = await Git(context)
-      //       .login(_unameController.text, _pwdController.text);
-      //   Provider.of<UserModel>(context, listen: false).user = user;
-      // } on DioError catch( e) {
-      //   //登录失败则提示
-      //   if (e.response?.statusCode == 401) {
-      //     showToast(GmLocalizations.of(context).userNameOrPasswordWrong);
-      //   } else {
-      //     showToast(e.toString());
-      //   }
-      // } finally {
-      //   // 隐藏loading框
-      //   // Navigator.of(context).pop();
-      // }
-      // sleep(Duration(milliseconds: 3000));
-      // EasyLoading.showSuccess('Success.');
-      // //登录成功则返回
-      // if (user != null) {
-      //   Navigator.of(context).pop();
-      // }
-    // }
-    webinfoInstance.login(username, password);
+  Future<void> startDiscovery() async {
+    discoveredEventArgs.value = [];
+    // await CentralManager.instance.startDiscovery();
+    discovering.value = true;
+    spinnerController.repeat();
   }
 
+  Future<void> stopDiscovery() async {
+    // await CentralManager.instance.stopDiscovery();
+    discovering.value = false;
+    spinnerController.stop();
+  }
   
+  Future<void> _onRegister() async {
+
+  }
+
   @override
   void onInit() {
     spinnerController = AnimationController(
@@ -90,7 +81,6 @@ class LoginController extends GetxController
       runZonedGuarded(onStartUp, onCrashed);
     });
     super.onInit();
-    
   }
 
   @override

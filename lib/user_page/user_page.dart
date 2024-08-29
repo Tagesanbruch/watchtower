@@ -44,6 +44,11 @@ class UserPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Container(
+                          child: InkWell(
+                            onTap:(){
+                              Get.toNamed("/login");
+                            },
+                          ),
                           width: 90.0,
                           height: 90.0,
                           decoration: BoxDecoration(
@@ -88,6 +93,7 @@ class UserPage extends StatelessWidget {
             },
             itemCount: menuTitles.length
          ),
+         
         // floatingActionButton: Obx(() => FloatingActionButton(
         //       onPressed: null,
         //           // ? () async {
