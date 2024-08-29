@@ -10,6 +10,7 @@ class RegisterPage extends StatelessWidget {
   final controller = Get.put(RegisterController());
   TextEditingController _unameController = TextEditingController();
   TextEditingController _pwdController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   bool ShowPassword = false;
 
   Function(String) usernameValidator = (String username) {
@@ -41,7 +42,6 @@ class RegisterPage extends StatelessWidget {
                   hintText: "UserName",
                   prefixIcon: Icon(Icons.person),
                 ),
-                // 校验用户名（不能为空）
                 validator: (v) {
                   if (v == null) {
                     return "null";
@@ -92,6 +92,31 @@ class RegisterPage extends StatelessWidget {
                   }
                   return null;
                 }),
+                const SizedBox(
+                height: 20,
+              ),
+            TextFormField(
+                autofocus: true,
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: "Email Address",
+                  hintText: "Email Address",
+                  prefixIcon: Icon(Icons.mail),
+                ),
+                validator: (v) {
+                  if (v == null) {
+                    return "null";
+                  }
+                  if (v.trim().isEmpty) {
+                    return "Please Enter Email Address";
+                  }
+                  ;
+                  return null;
+                }
+                // validator: () {
+                //   return true;
+                // }
+                ),
             Padding(
               padding: const EdgeInsets.only(top: 25),
               child: Column(children: [
@@ -102,23 +127,25 @@ class RegisterPage extends StatelessWidget {
                   constraints: BoxConstraints.expand(height: 55.0),
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
-                    onPressed: null,
+                    onPressed: (){
+                      return controller.onRegister(_unameController.text, _pwdController.text);
+                    },
                     // textColor: Colors.white,
                     child: Text("Register"),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ConstrainedBox(
-                  constraints: BoxConstraints.expand(height: 55.0),
-                  child: ElevatedButton(
-                    // color: Theme.of(context).primaryColor,
-                    onPressed: null,
-                    // textColor: Colors.white,
-                    child: Text("Register"),
-                  ),
-                ),
+                // const SizedBox(
+                //   height: 20,
+                // ),
+                // ConstrainedBox(
+                //   constraints: BoxConstraints.expand(height: 55.0),
+                //   child: ElevatedButton(
+                //     // color: Theme.of(context).primaryColor,
+                //     onPressed: null,
+                //     // textColor: Colors.white,
+                //     child: Text("Register"),
+                //   ),
+                // ),
               ]),
             ),
           ],

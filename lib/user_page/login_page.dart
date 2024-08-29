@@ -40,7 +40,6 @@ class LoginPage extends StatelessWidget {
                   hintText: "UserName",
                   prefixIcon: Icon(Icons.person),
                 ),
-                // 校验用户名（不能为空）
                 validator: (v) {
                   if (v == null) {
                     return "null";
@@ -102,7 +101,7 @@ class LoginPage extends StatelessWidget {
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
                     onPressed: () {
-                      return controller.onLogin(_unameController.toString(), _pwdController.toString());
+                      return controller.onLogin(_unameController.text, _pwdController.text);
                     },
                     // textColor: Colors.white,
                     child: Text("Login"),

@@ -3,21 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../signal_page/buffer_controller.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+
+import '../web_request/web_request.dart';
 
 // TODO: timeout and stop
 
 class RegisterController extends GetxController
     with GetSingleTickerProviderStateMixin {
-  final BufferController bufferController = Get.find();
+  // final BufferController bufferController = Get.find();
 
   late AnimationController spinnerController;
 
   var discovering = false.obs;
   var discoveredEventArgs = [].obs;
-
+  
   late final StreamSubscription stateChangedSubscription;
   late final StreamSubscription discoveredSubscription;
+
+  var webinfoInstance = webinfo();
 
   void onStartUp() async {
     // TODO: reduce logging level after debugging
@@ -26,7 +30,7 @@ class RegisterController extends GetxController
     spinnerController.stop();
     // await CentralManager.instance.setUp();
     // state.value = await CentralManager.instance.getState();
-    await startDiscovery();
+    // await startDiscovery();
   }
 
   void onCrashed(Object error, StackTrace stackTrace) {
@@ -36,22 +40,9 @@ class RegisterController extends GetxController
       middleText: "Failed to initialize BLE: $error\nRestart app to retry.",
     );
   }
-
-  Future<void> startDiscovery() async {
-    discoveredEventArgs.value = [];
-    // await CentralManager.instance.startDiscovery();
-    discovering.value = true;
-    spinnerController.repeat();
-  }
-
-  Future<void> stopDiscovery() async {
-    // await CentralManager.instance.stopDiscovery();
-    discovering.value = false;
-    spinnerController.stop();
-  }
   
-  Future<void> _onRegister() async {
-
+  void onRegister(String username, String password) async {
+    webinfoInstance.register(username, password);
   }
 
   @override

@@ -42,19 +42,16 @@ class LoginController extends GetxController
       //       .login(_unameController.text, _pwdController.text);
       //   Provider.of<UserModel>(context, listen: false).user = user;
       // } on DioError catch( e) {
-      //   //登录失败则提示
       //   if (e.response?.statusCode == 401) {
       //     showToast(GmLocalizations.of(context).userNameOrPasswordWrong);
       //   } else {
       //     showToast(e.toString());
       //   }
       // } finally {
-      //   // 隐藏loading框
       //   // Navigator.of(context).pop();
       // }
       // sleep(Duration(milliseconds: 3000));
       // EasyLoading.showSuccess('Success.');
-      // //登录成功则返回
       // if (user != null) {
       //   Navigator.of(context).pop();
       // }
