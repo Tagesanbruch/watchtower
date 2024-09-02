@@ -1,6 +1,7 @@
 // TODO: should probably move this to bluetooth-related directory
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
 import "package:get/get.dart";
@@ -15,7 +16,7 @@ class SignalController extends GetxController {
   final connectionState = false.obs;
   final Peripheral device;
   final BufferController bufferController;
-
+  
   SignalController(this.device, this.bufferController);
 
   late StreamSubscription connectionStateChangedSubscription;
@@ -37,14 +38,28 @@ class SignalController extends GetxController {
     characteristicNotifiedSubscription =
         CentralManager.instance.characteristicNotified.listen(
       (eventArgs) {
-        if (eventArgs.characteristic.uuid != targetCharateristic) {
+        if (
+          eventArgs.characteristic.uuid != targetECGCharateristic && 
+          eventArgs.characteristic.uuid != targetIMUCharateristic &&  
+          eventArgs.characteristic.uuid != targetBATCharateristic
+        ) {
           return;
         }
         final packet = eventArgs.value;
-
-        /// packet decode
-        final data = ECGData.fromPacket(packet);
-        bufferController.extend(data);
+        if(eventArgs.characteristic.uuid == targetECGCharateristic){
+            /// ECG packet decode
+          if(packet[0] == 0x06){        //0x06 -- lead on
+            bufferController.leadIsOff.value = false;
+          }else if(packet[0] == 0x01){  //0x01 -- lead off
+            bufferController.leadIsOff.value = true;
+          }
+          final data = ECGData.fromPacket(packet);
+          if(bufferController.leadIsOff == false){
+            bufferController.extend(data);
+          }
+        }else if(eventArgs.characteristic.uuid == targetBATCharateristic){
+            bufferController.batteryLevel.value = packet[0];
+        }
       },
     );
 
@@ -70,14 +85,29 @@ class SignalController extends GetxController {
     );
     final services = await CentralManager.instance.discoverGATT(device);
     // TODO: better error management
-    GattCharacteristic? target;
-    outer:
+    GattCharacteristic? target, targetECG, targetIMU, targetBAT;
+    // outer:
     for (var service in services) {
-      if(service.uuid == targetService){
+      // inner: 
+      if(service.uuid == targetECGService){
           for (var characteristic in service.characteristics) {
-            if (characteristic.uuid == targetCharateristic) {
-              target = characteristic;
-              break outer;
+            if (characteristic.uuid == targetECGCharateristic) {
+              targetECG = characteristic;
+              target = targetECG;
+            }
+        }
+      }
+      if(service.uuid == targetIMUService){
+          for (var characteristic in service.characteristics) {
+            if (characteristic.uuid == targetIMUCharateristic) {
+              targetIMU = characteristic;
+            }
+        }
+      }
+      if(service.uuid == targetBATService){
+          for (var characteristic in service.characteristics) {
+            if (characteristic.uuid == targetBATCharateristic) {
+              targetBAT = characteristic;
             }
         }
       }
@@ -92,8 +122,20 @@ class SignalController extends GetxController {
           });
       return;
     }
+    if (targetBAT == null) {
+      Get.defaultDialog(
+          title: "Error",
+          middleText: "Not a valid device.",
+          textConfirm: "OK",
+          onConfirm: () {
+            Get.offAllNamed("/bluetooth");
+          });
+      return;
+    }
     await CentralManager.instance
         .setCharacteristicNotifyState(target, state: true);
+    await CentralManager.instance
+        .setCharacteristicNotifyState(targetBAT, state: true);
   }
 
   void disconnect() async {

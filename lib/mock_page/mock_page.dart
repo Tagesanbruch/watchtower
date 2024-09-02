@@ -54,7 +54,11 @@ class MockPage extends StatelessWidget {
               const SizedBox(height: 10),
               FilledButton(
                   onPressed: () async => awaitWithOverlay(promptBench),
-                  child: const Text("Begin Benchmarking"))
+                  child: const Text("Begin Benchmarking")),
+              const SizedBox(height: 10),
+              FilledButton(
+                  onPressed: () async => awaitWithOverlay(promptBench),
+                  child: const Text("Database export")),
             ])));
   }
 }

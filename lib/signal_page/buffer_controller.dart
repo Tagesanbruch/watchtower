@@ -63,6 +63,14 @@ class BufferController extends GetxController
   /// the index of the first frame, of the latest packet
   int firstFreshIndex = 0;
 
+  /// indicating whether ECG lead is off
+  final leadIsOff = true.obs;
+  
+  /// Battery level
+  // int batLevel = 0;
+
+  final batteryLevel = 0.obs;
+
   /// controls the IntTween
   late AnimationController animationController;
 

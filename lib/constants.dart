@@ -47,3 +47,7 @@ const markLength = 40;
 const markColor = charts.Color(r: 0xff, g: 0xbf, b: 0xb8);
 
 const averageLineColor = charts.Color(r: 0xff, g: 0x63, b: 0x61);
+
+const serverurl = "http://47.238.52.118:8090";
+
+const isRelease = false;

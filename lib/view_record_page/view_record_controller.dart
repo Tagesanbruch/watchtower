@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'package:share_extend/share_extend.dart';
 
 import '../constants.dart';
 import '../record_page/record_controller.dart';
@@ -71,6 +74,38 @@ class ViewRecordController extends GetxController {
       snackbar("Error", "Failed to open file dialog: $e");
     }
   }
+
+  Future<void> promptSaveCurrentRecord() async {
+    try {
+      // final String? path = (await FilePicker.platform.saveFile(
+      //   dialogTitle: "Select save location",
+      //   fileName: "record.txt",
+      //   type: FileType.custom,
+      //   allowedExtensions: ["txt"],
+      // ));
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String path = appDocDir.path;
+      // if (path != null) {
+        final startDisplay = dateFormatter.format(record.startTime);
+        final file = File('$path/$startDisplay.txt');
+        final buffer = StringBuffer();
+
+        // Assuming the headers are the same as in the promptLoadCorrectAnnotations function
+        buffer.writeln("Sample"); // Add other headers if necessary
+
+        for (var data in record.data) {
+          buffer.writeln("${data.timestamp}, ${data.value}"); // Add other data fields if necessary
+        }
+
+        await file.writeAsString(buffer.toString());
+        // Share the file
+        await Share.shareXFiles([XFile(file.path)], text: 'record file');
+        snackbar("Success", "Record saved successfully.");
+    } on PlatformException catch (e) {
+      snackbar("Error", "Failed to open file dialog: $e");
+    }
+  }
+
 
   int get timestampStart => record.data.first.timestamp;
   int get timestampEnd => timestampStart + displayTimestampRange;

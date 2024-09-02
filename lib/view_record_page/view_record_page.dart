@@ -78,7 +78,7 @@ class ViewRecordPage extends StatelessWidget {
                   ))),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: controller.promptLoadCorrectAnnotations,
+          onPressed: controller.promptSaveCurrentRecord,
           tooltip: "Load Correct Annotations",
           child: const Icon(Icons.assignment),
         ),

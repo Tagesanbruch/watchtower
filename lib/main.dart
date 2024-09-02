@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -26,7 +27,7 @@ Future main() async {
 
 /// main app view
 class App extends StatelessWidget {
-  /// state of navigationDrawer
+  /// state EasyLoading.init();of navigationDrawer
   final selectedIndex = 0.obs;
 
   App({super.key});
@@ -42,33 +43,36 @@ class App extends StatelessWidget {
         themeMode: ThemeMode.system,
         navigatorKey: Get.key,
         initialRoute: entryURL,
-        builder: (context, child) => Scaffold(
-              key: scaffoldKey,
+        builder: (context, child) {
+          // EasyLoading.init(); //TODO: fix the EasyLoading Initial
+          return Scaffold(
+            key: scaffoldKey,
 
-              /// inject global navigationDrawer
-              drawer: Obx(() => NavigationDrawer(
-                    selectedIndex: selectedIndex(),
-                    onDestinationSelected: (index) {
-                      selectedIndex.value = index;
-                      Get.toNamed("/${shownNavigationList[index].name}");
-                      scaffoldKey.currentState!.closeDrawer();
-                    },
-                    children: [
-                      /// logo image
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(28, 16, 24, 10),
-                          child: Center(child: Image.asset("assets/logo.png"))),
+            /// inject global navigationDrawer
+            drawer: Obx(() => NavigationDrawer(
+                  selectedIndex: selectedIndex(),
+                  onDestinationSelected: (index) {
+                    selectedIndex.value = index;
+                    Get.toNamed("/${shownNavigationList[index].name}");
+                    scaffoldKey.currentState!.closeDrawer();
+                  },
+                  children: [
+                    /// logo image
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(28, 16, 24, 10),
+                        child: Center(child: Image.asset("assets/logo.png"))),
 
-                      /// navigationDrawer items
-                      ...shownNavigationList.map((entry) =>
-                          NavigationDrawerDestination(
-                              label: Text(entry.title),
-                              icon: Icon(entry.icon),
-                              selectedIcon: Icon(entry.selectedIcon)))
-                    ],
-                  )),
-              body: child,
-            ),
+                    /// navigationDrawer items
+                    ...shownNavigationList.map((entry) =>
+                        NavigationDrawerDestination(
+                            label: Text(entry.title),
+                            icon: Icon(entry.icon),
+                            selectedIcon: Icon(entry.selectedIcon)))
+                  ],
+                )),
+            body: child,
+          );
+        },
         getPages: navigationList
             .map((entry) => GetPage(
                 name: "/${entry.name}",

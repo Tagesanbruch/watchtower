@@ -58,10 +58,16 @@ class SignalPage extends StatelessWidget {
                             LinearProgressIndicator(value: value))
                     : Container()),
                 // const ECGGraph(),
-                Obx(() => bufferController.percentage.value == 1.0
+                Obx(() => bufferController.percentage.value == 1.0 && bufferController.leadIsOff == false
                     ? Expanded(child: Graph())
-                    : Container()),
-                // PipelineGraph(pipelines, detectors)
+                    : const TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'No Leads Detected',
+                        ),
+                      )
+                    ,
+                )// PipelineGraph(pipelines, detectors)
               ],
             ),
             showDrawerButton: false,

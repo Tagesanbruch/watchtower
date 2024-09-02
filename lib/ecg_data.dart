@@ -12,9 +12,10 @@ const packSize = 4 * 2; // 4 bytes for each int and float
 class ECGData {
   /// timestamp, a simple incremental counter should do
   int timestamp;
-
   /// sample value
   double value;
+  /// lead_off, indicating whether the lead is off
+  // bool lead_off;
   /// calculated from timestamp, used in graph rendering
   late int index;
 
@@ -61,7 +62,9 @@ class ECGData {
     // }
     //
     // update: this should already be fixed after supplying our own libs, but haven't been tested
-
+    // if (byteData.getInt8(0) == 0x06){
+    //   lead_off = false;
+    // }
     for (int i = 0; i < byteData.lengthInBytes ~/ packSize; i++) {
       final timestamp = byteData.getInt32(i * packSize);
       final value = byteData.getFloat32(i * packSize + 4);

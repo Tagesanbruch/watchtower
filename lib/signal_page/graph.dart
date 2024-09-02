@@ -240,7 +240,24 @@ class Graph extends StatelessWidget {
                   controller.debug.value = value;
                 },
               )),
-        )
+        ),
+        Obx(() {
+          final int batLevel = controller.batteryLevel.value;
+          return ListTile(
+            leading: const Icon(Icons.battery_0_bar),
+            title: const Text("Battery"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // BatteryWidget(batLevel),
+                Text('$batLevel%'),
+              ],
+            ),
+          );
+        }),
+        const SizedBox(
+          height: 80.0,
+        ),
       ]);
 }
 
