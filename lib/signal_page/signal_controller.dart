@@ -15,7 +15,7 @@ class SignalController extends GetxController {
   final connectionState = false.obs;
   final Peripheral device;
   final BufferController bufferController;
-
+  
   SignalController(this.device, this.bufferController);
 
   late StreamSubscription connectionStateChangedSubscription;
@@ -43,8 +43,15 @@ class SignalController extends GetxController {
         final packet = eventArgs.value;
 
         /// packet decode
+        if(packet[0] == 0x06){        //0x06 -- lead on
+          bufferController.leadIsOff = false;
+        }else if(packet[0] == 0x01){  //0x01 -- lead off
+          bufferController.leadIsOff = true;
+        }
         final data = ECGData.fromPacket(packet);
-        bufferController.extend(data);
+        if(bufferController.leadIsOff == false){
+          bufferController.extend(data);
+        }
       },
     );
 
