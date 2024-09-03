@@ -29,7 +29,7 @@ Future main() async {
 class App extends StatelessWidget {
   /// state EasyLoading.init();of navigationDrawer
   final selectedIndex = 0.obs;
-
+  final easyload = EasyLoading.init();
   App({super.key});
 
   @override
@@ -44,7 +44,7 @@ class App extends StatelessWidget {
         navigatorKey: Get.key,
         initialRoute: entryURL,
         builder: (context, child) {
-          // EasyLoading.init(); //TODO: fix the EasyLoading Initial
+          child = easyload(context, child); //TODO: fix the EasyLoading Initial
           return Scaffold(
             key: scaffoldKey,
 
