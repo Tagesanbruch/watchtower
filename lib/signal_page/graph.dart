@@ -100,54 +100,84 @@ class Graph extends StatelessWidget {
                     }
 
                     /// for annotations
-                    final finalAnnotation = controller.finalAnnotation;
-                    for (final timestamp in finalAnnotation) {
-                      if (timestamp < controller.frameStartTimestamp) {
-                        continue;
-                      }
-                      final index = timestamp % graphBufferLength;
-                      final lowerIndex = index - markLength;
-                      final upperIndex = index + markLength;
-                      if (lowerIndex < controller.cursorIndex &&
-                          upperIndex > 0) {
-                        rangeAnnotations.add(charts.RangeAnnotationSegment(
-                            lowerIndex,
-                            upperIndex,
-                            charts.RangeAnnotationAxisType.domain,
-                            color: markColor));
-                      }
-                    }
-
-                    /// fresh frames
-                    data.add(charts.Series<ECGData, int>(
-                        id: "fresh",
-                        domainFn: (ECGData item, _) => item.index,
-                        measureFn: (ECGData item, _) => item.value,
-                        data: ListSlice(buffer, freshStart, freshEnd),
-                        colorFn: (_, __) => freshColor));
+                    // final finalAnnotation = controller.finalAnnotation;
+                    // for (final timestamp in finalAnnotation) {
+                    //   if (timestamp < controller.frameStartTimestamp) {
+                    //     continue;
+                    //   }
+                    //   final index = timestamp % graphBufferLength;
+                    //   final lowerIndex = index - markLength;
+                    //   final upperIndex = index + markLength;
+                    //   if (lowerIndex < controller.cursorIndex &&
+                    //       upperIndex > 0) {
+                    //     rangeAnnotations.add(charts.RangeAnnotationSegment(
+                    //         lowerIndex,
+                    //         upperIndex,
+                    //         charts.RangeAnnotationAxisType.domain,
+                    //         color: markColor));
+                    //   }
+                    // }
 
                     /// stale frames
-                    if (staleStart < graphBufferLength) {
+                    // if (staleStart < graphBufferLength) {
+                    //   data.add(charts.Series<ECGData, int>(
+                    //       id: "stale",
+                    //       domainFn: (ECGData item, _) => item.index,
+                    //       measureFn: (ECGData item, _) => item.value,
+                    //       data:
+                    //           ListSlice(buffer, staleStart, graphBufferLength),
+                    //       colorFn: (_, __) => staleColor));
+                    // }
+
+                    /// fresh frames
+                    List<ECGData> bufferList = ListSlice(
+                        buffer.toList(), 0, (graphBufferLength * 2 ~/ 3)); //Slice to adapted index
+
+                    List<ECGData> firstPart = [];
+                    List<ECGData> secondPart = [];
+                    int splitIndex = bufferList.indexWhere((item) {
+                      int currentIndex = bufferList.indexOf(item);
+                      return currentIndex < bufferList.length - 1 &&
+                          bufferList[currentIndex + 1].index < item.index;
+                    });
+
+                    if (splitIndex != -1) {
+                      firstPart = bufferList.sublist(0, splitIndex + 1);
+                      secondPart = bufferList.sublist(splitIndex + 1);
+                    } else {
+                      firstPart = bufferList;
+                    }
+
+                    data.add(charts.Series<ECGData, int>(
+                      id: "firstFresh",
+                      domainFn: (ECGData item, _) => item.index,
+                      measureFn: (ECGData item, _) => item.value,
+                      data: firstPart,
+                      colorFn: (_, __) => freshColor,
+                    ));
+
+                    if (secondPart.isNotEmpty) {
                       data.add(charts.Series<ECGData, int>(
-                          id: "stale",
-                          domainFn: (ECGData item, _) => item.index,
-                          measureFn: (ECGData item, _) => item.value,
-                          data:
-                              ListSlice(buffer, staleStart, graphBufferLength),
-                          colorFn: (_, __) => staleColor));
+                        id: "secondFresh",
+                        domainFn: (ECGData item, _) => item.index,
+                        measureFn: (ECGData item, _) => item.value,
+                        data: secondPart,
+                        colorFn: (_, __) => freshColor,
+                      ));
                     }
 
                     return charts.LineChart(
                       data,
                       animate: false,
                       domainAxis: const charts.NumericAxisSpec(
-                          viewport:
-                              charts.NumericExtents(0, graphBufferLength - 1),
-                          renderSpec: charts.NoneRenderSpec()),
+                        viewport:
+                            charts.NumericExtents(0, graphBufferLength - 1),
+                        renderSpec: charts.NoneRenderSpec(),
+                      ),
                       primaryMeasureAxis: const charts.NumericAxisSpec(
-                          renderSpec: charts.NoneRenderSpec(),
-                          viewport:
-                              charts.NumericExtents(lowerLimit, upperLimit)),
+                        renderSpec: charts.NoneRenderSpec(),
+                        viewport: charts.NumericExtents(lowerLimit, upperLimit),
+                      ),
                       behaviors: [charts.RangeAnnotation(rangeAnnotations)],
                     );
                   })),
@@ -167,7 +197,8 @@ class Graph extends StatelessWidget {
                       const SizedBox(width: 6),
                       Obx(() => controller.heartRate.value != null
                           ? SmoothCounter(
-                              count: controller.heartRate.value!.toInt(),
+                              count: controller.heartrateLevel(),
+                              // count: controller.heartRate.value!.toInt(),
                               textStyle: const TextStyle(
                                   fontSize: 30,
                                   height: 1,

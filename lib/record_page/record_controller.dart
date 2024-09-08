@@ -16,6 +16,7 @@ const String dbName = "watchtower.db";
 const String tableName = "records";
 
 DateFormat dateFormatter = DateFormat('yyyy-MM-dd kk:mm:ss');
+DateFormat dateFormatterFile = DateFormat('yyyy_MM_dd_kk_mm_ss');
 
 class Record {
   final DateTime startTime;

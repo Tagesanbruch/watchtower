@@ -41,7 +41,8 @@ class SignalController extends GetxController {
         if (
           eventArgs.characteristic.uuid != targetECGCharateristic && 
           eventArgs.characteristic.uuid != targetIMUCharateristic &&  
-          eventArgs.characteristic.uuid != targetBATCharateristic
+          eventArgs.characteristic.uuid != targetBATCharateristic &&
+          eventArgs.characteristic.uuid != targetHRCharateristic
         ) {
           return;
         }
@@ -59,6 +60,8 @@ class SignalController extends GetxController {
           }
         }else if(eventArgs.characteristic.uuid == targetBATCharateristic){
             bufferController.batteryLevel.value = packet[0];
+        }else if(eventArgs.characteristic.uuid == targetHRCharateristic){
+            bufferController.heartrateLevel.value = packet[1];
         }
       },
     );
@@ -85,7 +88,7 @@ class SignalController extends GetxController {
     );
     final services = await CentralManager.instance.discoverGATT(device);
     // TODO: better error management
-    GattCharacteristic? target, targetECG, targetIMU, targetBAT;
+    GattCharacteristic? target, targetECG, targetIMU, targetBAT, targetHR;
     // outer:
     for (var service in services) {
       // inner: 
@@ -111,18 +114,15 @@ class SignalController extends GetxController {
             }
         }
       }
+      if(service.uuid == targetHRService){
+          for (var characteristic in service.characteristics) {
+            if (characteristic.uuid == targetHRCharateristic) {
+              targetHR = characteristic;
+            }
+        }
+      }
     }
-    if (target == null) {
-      Get.defaultDialog(
-          title: "Error",
-          middleText: "Not a valid device.",
-          textConfirm: "OK",
-          onConfirm: () {
-            Get.offAllNamed("/bluetooth");
-          });
-      return;
-    }
-    if (targetBAT == null) {
+    if (target == null || targetBAT == null || targetHR == null) {
       Get.defaultDialog(
           title: "Error",
           middleText: "Not a valid device.",
@@ -136,6 +136,8 @@ class SignalController extends GetxController {
         .setCharacteristicNotifyState(target, state: true);
     await CentralManager.instance
         .setCharacteristicNotifyState(targetBAT, state: true);
+    await CentralManager.instance
+        .setCharacteristicNotifyState(targetHR, state: true);
   }
 
   void disconnect() async {

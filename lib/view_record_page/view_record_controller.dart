@@ -86,12 +86,12 @@ class ViewRecordController extends GetxController {
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String path = appDocDir.path;
       // if (path != null) {
-        final startDisplay = dateFormatter.format(record.startTime);
-        final file = File('$path/$startDisplay.txt');
+        final startDisplay = dateFormatterFile.format(record.startTime);
+        final file = File('$path/$startDisplay.csv');
         final buffer = StringBuffer();
 
         // Assuming the headers are the same as in the promptLoadCorrectAnnotations function
-        buffer.writeln("Sample"); // Add other headers if necessary
+        buffer.writeln("timestamp,ECG");
 
         for (var data in record.data) {
           buffer.writeln("${data.timestamp}, ${data.value}"); // Add other data fields if necessary

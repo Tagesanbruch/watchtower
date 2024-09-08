@@ -35,28 +35,32 @@ class LoginController extends GetxController
   void onLogin(String username, String password) async {
     //  if (pwState.validate()) {
     
-      // EasyLoading.show(status: "Logining..."); //TODO: fix the EasyLoading Initial
       // User? user;
       // try {
-      //   user = await Git(context)
-      //       .login(_unameController.text, _pwdController.text);
-      //   Provider.of<UserModel>(context, listen: false).user = user;
-      // } on DioError catch( e) {
-      //   if (e.response?.statusCode == 401) {
-      //     showToast(GmLocalizations.of(context).userNameOrPasswordWrong);
-      //   } else {
-      //     showToast(e.toString());
-      //   }
-      // } finally {
+        // EasyLoading.show(status: "Logining...");
+        await webinfoInstance.login(username, password);
+        // EasyLoading.dismiss();
+        // EasyLoading.showSuccess('Success.');
+      // } catch(e) {
+        // if (e.response?.statusCode == 400) {
+          // EasyLoading.showError("Incorrect name or password.");
+        // } else {
+          //TODO:  ...other error process
+        // }
+      // } 
+      // finally {
       //   // Navigator.of(context).pop();
+      //   // sleep(const Duration(milliseconds: 500));
+      //   // EasyLoading.showSuccess('Success.');
       // }
       // sleep(Duration(milliseconds: 3000));
-      // EasyLoading.showSuccess('Success.');
+      // webinfoInstance.login(username, password);
+      // EasyLoading.showS ;uccess('Success.');
       // if (user != null) {
       //   Navigator.of(context).pop();
       // }
     // }
-    webinfoInstance.login(username, password);
+
   }
 
   
@@ -83,6 +87,7 @@ class LoginController extends GetxController
     //     }
     //   },
     // );
+    // EasyLoading.init();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       runZonedGuarded(onStartUp, onCrashed);
     });

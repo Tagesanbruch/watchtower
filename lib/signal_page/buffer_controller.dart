@@ -2,6 +2,7 @@
 library;
 
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/animation.dart';
@@ -35,7 +36,7 @@ class BufferController extends GetxController
   /// a fixed length list to save up memory
   /// every write should perform according to a calculated `index`
   /// in order to achieve a wipe-off/overwrite effect
-  final List<ECGData> buffer = [];
+  final Queue<ECGData> buffer = Queue();
 
   /// the time when the last packet arrived
   DateTime? lastPackArrivalTime;
@@ -71,6 +72,9 @@ class BufferController extends GetxController
 
   final batteryLevel = 0.obs;
 
+  /// HR from device
+  final heartrateLevel = 0.obs;
+
   /// controls the IntTween
   late AnimationController animationController;
 
@@ -97,8 +101,10 @@ class BufferController extends GetxController
 
   /// push a frame into the buffer
   void _add(ECGData item) {
+    
     if (isFilled) {
-      buffer[item.index] = (item);
+      buffer.add(item);
+      buffer.removeFirst();
     } else {
       buffer.add(item);
       updatePercentage();
@@ -145,9 +151,9 @@ class BufferController extends GetxController
 
   /// cuts and shifts the buffer so that frames are sorted by their timestamp
   List<ECGData> get actualData =>
-      ListSlice(buffer, lastFreshIndex + 1, graphBufferLength) +
+      ListSlice(buffer.toList(), lastFreshIndex + 1, graphBufferLength) +
       ListSlice(
-          buffer,
+          buffer.toList(),
           0,
           lastFreshIndex +
               1); // TODO: optimize this by implementing an alternative indexed read

@@ -11,7 +11,7 @@ class UserPage extends StatelessWidget {
 
   List menuTitles = [
     'reserve',
-    'test1',
+    'My Records',
     'test2',
     'test3',
     'test4',
@@ -20,7 +20,7 @@ class UserPage extends StatelessWidget {
 
   List menuIcons = [
     Icons.man,
-    Icons.message,
+    Icons.health_and_safety_rounded,
     Icons.print,
     Icons.error,
     Icons.phone,
@@ -35,7 +35,7 @@ class UserPage extends StatelessWidget {
             itemBuilder: (context, i){
               if(i == 0){
                 return Container(
-                  color: Colors.white,
+                  // color: Colors.white,
                   height: 150.0,
                   
                   child: Center(
@@ -82,7 +82,13 @@ class UserPage extends StatelessWidget {
               final icon = menuIcons[i];
               final theme = Theme.of(context);
               return ListTile(
-                // onTap: null,
+                onTap: (){
+                  if (i == 1){
+                    Get.toNamed("/record");
+                    return;
+                  }
+                  // return null;
+                },
                 title: Text(name ?? 'N/A'),
                 leading: Icon(icon),
                 trailing: Icon(Icons.arrow_forward_ios),
