@@ -15,7 +15,7 @@ class UserPage extends StatelessWidget {
     'test2',
     'test3',
     'test4',
-    'test5',
+    'Settings',
   ];
 
   List menuIcons = [
@@ -24,31 +24,24 @@ class UserPage extends StatelessWidget {
     Icons.print,
     Icons.error,
     Icons.phone,
-    Icons.send,
+    Icons.settings,
   ];
 
   @override
   Widget build(BuildContext context) {
     return makePage(
-        "User Page",
-        ListView.separated(
-            itemBuilder: (context, i){
-              if(i == 0){
-                return Container(
+      "User Page",
+      ListView.separated(
+          itemBuilder: (context, i) {
+            if (i == 0) {
+              return SizedBox(
                   // color: Colors.white,
                   height: 150.0,
-                  
                   child: Center(
-                    
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Container(
-                          child: InkWell(
-                            onTap:(){
-                              Get.toNamed("/login");
-                            },
-                          ),
                           width: 90.0,
                           height: 90.0,
                           decoration: BoxDecoration(
@@ -62,58 +55,48 @@ class UserPage extends StatelessWidget {
                               image: AssetImage("assets/avatar_default.png"),
                               fit: BoxFit.cover,
                             ),
-                            
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Get.toNamed("/login");
+                            },
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10.0,
                         ),
-                        Text(
+                        const Text(
                           'Sign in',
                           style: TextStyle(color: Colors.black),
                         ),
-                        
                       ],
                     ),
-                  )                  
-                );
-              }
-              final name = menuTitles[i];
-              final icon = menuIcons[i];
-              final theme = Theme.of(context);
-              return ListTile(
-                onTap: (){
-                  if (i == 1){
-                    Get.toNamed("/record");
-                    return;
-                  }
-                  // return null;
-                },
-                title: Text(name ?? 'N/A'),
-                leading: Icon(icon),
-                trailing: Icon(Icons.arrow_forward_ios),
-              );
-            },
-            separatorBuilder: (context, i){
-              return Divider();
-            },
-            itemCount: menuTitles.length
-         ),
-         
-        // floatingActionButton: Obx(() => FloatingActionButton(
-        //       onPressed: null,
-        //           // ? () async {
-        //           //     if (controller.discovering.value) {
-        //           //       await controller.stopDiscovery();
-        //           //     } else {
-        //           //       await controller.startDiscovery();
-        //           //     }
-        //           //   }
-        //           // : null,
-        //       tooltip: 'Scan',
-        //       child: Icon(
-        //           controller.discovering.value ? Icons.stop : Icons.refresh),
-        //     ))
+                  ));
+            }
+            final name = menuTitles[i];
+            final icon = menuIcons[i];
+            final theme = Theme.of(context);
+            return ListTile(
+              onTap: () {
+                if (i == 1) {
+                  Get.toNamed("/record");
+                  return;
+                }
+                if (i == 5) {
+                  Get.toNamed("/settings");
+                  return;
+                }
+                // return null;
+              },
+              title: Text(name ?? 'N/A'),
+              leading: Icon(icon),
+              trailing: const Icon(Icons.arrow_forward_ios),
             );
+          },
+          separatorBuilder: (context, i) {
+            return const Divider();
+          },
+          itemCount: menuTitles.length),
+    );
   }
 }

@@ -224,7 +224,7 @@ class Graph extends StatelessWidget {
           Text("Interval History",
               style: Theme.of(context).textTheme.titleMedium),
           SizedBox(
-              height: 300,
+              height: 200,
               child: Obx(() {
                 final intervalHistoryData = [
                   charts.Series<(int, int), int>(
@@ -262,16 +262,7 @@ class Graph extends StatelessWidget {
                 );
               }))
         ])),
-        ListTile(
-          leading: const Icon(Icons.bug_report),
-          title: const Text("Debug"),
-          trailing: Obx(() => Switch(
-                value: controller.debug.value,
-                onChanged: (bool value) {
-                  controller.debug.value = value;
-                },
-              )),
-        ),
+        
         Obx(() {
           final int batLevel = controller.batteryLevel.value;
           return ListTile(
@@ -286,6 +277,23 @@ class Graph extends StatelessWidget {
             ),
           );
         }),
+        ListTile(
+          leading: const Icon(Icons.bug_report),
+          title: const Text("Debug"),
+          trailing: Obx(() => Switch(
+                value: controller.debug.value,
+                onChanged: (bool value) {
+                  controller.debug.value = value;
+                },
+              )),
+        ),
+        ListTile(
+          leading: const Icon(Icons.settings),
+          title: const Text("Settings"),
+          onTap: () {
+            Get.toNamed("/settings");
+          },
+        ),
         const SizedBox(
           height: 80.0,
         ),

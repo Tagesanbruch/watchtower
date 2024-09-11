@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:watchtower/main.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'bluetooth_page/bluetooth_page.dart';
 import 'user_page/user_page.dart';
@@ -10,6 +8,7 @@ import 'mock_page/mock_page.dart';
 import 'record_page/record_page.dart';
 import 'signal_page/signal_page.dart';
 import 'view_record_page/view_record_page.dart';
+import 'settings_page/settings_page.dart';
 
 /// start with bluetooth view
 const entryURL = "/bluetooth";
@@ -35,7 +34,10 @@ final List<AppPage> navigationList = [
       hidden: true), //TODO: change Icon
   AppPage("register", "Register", () => RegisterPage(), Icons.local_activity,
       Icons.local_activity_outlined,
-      hidden: true) //TODO: change Icon
+      hidden: true), //TODO: change Icon
+  AppPage("settings", "Settings", () => SettingsPage(), Icons.settings,
+      Icons.settings,
+      hidden: true),
 ];
 
 /// hide pages marked with "hidden: true"
