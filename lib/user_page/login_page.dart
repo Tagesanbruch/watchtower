@@ -1,4 +1,3 @@
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,8 +8,8 @@ class LoginPage extends StatelessWidget {
   LoginPage({super.key});
   final controller = Get.put(LoginController());
   bool ShowPassword = false;
-  TextEditingController _unameController = TextEditingController();
-  TextEditingController _pwdController = TextEditingController();
+  final TextEditingController _unameController = TextEditingController();
+  final TextEditingController _pwdController = TextEditingController();
   Function(String) usernameValidator = (String username) {
     if (username.isEmpty) {
       return 'Username empty';
@@ -35,7 +34,7 @@ class LoginPage extends StatelessWidget {
             TextFormField(
                 autofocus: true,
                 controller: _unameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "UserName",
                   hintText: "UserName",
                   prefixIcon: Icon(Icons.person),
@@ -47,7 +46,6 @@ class LoginPage extends StatelessWidget {
                   if (v.trim().isEmpty) {
                     return "Please Enter Username";
                   }
-                  ;
                   return null;
                 }
                 // validator: () {
@@ -63,7 +61,7 @@ class LoginPage extends StatelessWidget {
                 decoration: InputDecoration(
                     labelText: "Password",
                     hintText: "Password",
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(ShowPassword
                           ? Icons.visibility_off
@@ -73,7 +71,6 @@ class LoginPage extends StatelessWidget {
                           ShowPassword = !ShowPassword;
                           (context as Element).markNeedsBuild();
                         }
-                        ;
                       },
                     )),
                 obscureText: !ShowPassword,
@@ -84,7 +81,6 @@ class LoginPage extends StatelessWidget {
                   if (v.trim().isEmpty) {
                     return "Please Enter Password";
                   }
-                  ;
                   if (v.trim().length < 6) {
                     return "Password Too Short";
                   }
@@ -97,28 +93,28 @@ class LoginPage extends StatelessWidget {
                   height: 10,
                 ),
                 ConstrainedBox(
-                  constraints: BoxConstraints.expand(height: 55.0),
+                  constraints: const BoxConstraints.expand(height: 55.0),
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
                     onPressed: () {
                       return controller.onLogin(_unameController.text, _pwdController.text);
                     },
                     // textColor: Colors.white,
-                    child: Text("Login"),
+                    child: const Text("Login"),
                   ),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 ConstrainedBox(
-                  constraints: BoxConstraints.expand(height: 55.0),
+                  constraints: const BoxConstraints.expand(height: 55.0),
                   child: ElevatedButton(
                     // color: Theme.of(context).primaryColor,
                     onPressed: (){
                       Get.toNamed("/register");
                     },
                     // textColor: Colors.white,
-                    child: Text("Register"),
+                    child: const Text("Register"),
                   ),
                 ),
               ]),

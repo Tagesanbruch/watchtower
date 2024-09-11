@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../bluetooth_page/bluetooth_device.dart';
 import '../web_request/web_request.dart';
 import '../signal_page/signal_controller.dart';
 

@@ -12,7 +12,7 @@ class ButtonX extends GetxController {
 }
 
 class SliderX extends GetxController {
-  Rx<RangeValues> rangeValues = Rx<RangeValues>(RangeValues(0.3, 0.7));
+  Rx<RangeValues> rangeValues = Rx<RangeValues>(const RangeValues(0.3, 0.7));
 
   void valuesUpdate(RangeValues values) => rangeValues.value = values;
 }
@@ -61,9 +61,9 @@ class SettingsPage extends StatelessWidget {
                     ExpansionPanel(
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
-                        return Container(
+                        return SizedBox(
                           height: 50, // Set your desired height here
-                          child: ListTile(
+                          child: const ListTile(
                             title: Text('心电图绘制数据选择'),
                           ),
                         );
@@ -98,9 +98,9 @@ class SettingsPage extends StatelessWidget {
                     ExpansionPanel(
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
-                        return Container(
+                        return SizedBox(
                           height: 50, // Set your desired height here
-                          child: ListTile(
+                          child: const ListTile(
                             title: Text('心率警报范围'),
                           ),
                         );
@@ -137,9 +137,9 @@ class SettingsPage extends StatelessWidget {
                     ExpansionPanel(
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
-                        return Container(
+                        return SizedBox(
                           height: 50, // Set your desired height here
-                          child: ListTile(
+                          child: const ListTile(
                             title: Text('控制指令'),
                           ),
                         );
@@ -155,15 +155,15 @@ class SettingsPage extends StatelessWidget {
                                 decoration: InputDecoration(
                                   hintText: '请输入命令',
                                   border: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.grey),
+                                    borderSide: const BorderSide(color: Colors.grey),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
-                                  contentPadding: EdgeInsets.all(10.0),
+                                  contentPadding: const EdgeInsets.all(10.0),
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.send),
+                              icon: const Icon(Icons.send),
                               onPressed: () {
                                 // Handle send button press
                               },
@@ -177,9 +177,9 @@ class SettingsPage extends StatelessWidget {
                     ExpansionPanel(
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
-                        return Container(
+                        return SizedBox(
                           height: 50, // Set your desired height here
-                          child: ListTile(
+                          child: const ListTile(
                             title: Text('选项'),
                           ),
                         );
@@ -187,7 +187,7 @@ class SettingsPage extends StatelessWidget {
                       body: Obx(() {
                         CheckboxX cx = Get.put(CheckboxX());
                         return CheckboxListTile(
-                          title: Text('选项1'),
+                          title: const Text('选项1'),
                           value: cx.isChecked.value,
                           onChanged: (bool? value) => cx.toggle(),
                         );
@@ -202,14 +202,14 @@ class SettingsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
-                child: Text('Apply', style: TextStyle(color: Colors.blue)),
+                child: const Text('Apply', style: TextStyle(color: Colors.blue)),
                 onPressed: () {
                   var buttonX = Get.find<ButtonX>();
                   controller.sendCommand(buttonX.selectedIndex.value);
                 },
               ),
               TextButton(
-                child: Text('Reset', style: TextStyle(color: Colors.blue)),
+                child: const Text('Reset', style: TextStyle(color: Colors.blue)),
                 onPressed: () {
                   // Handle reset button press
                 },

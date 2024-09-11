@@ -1,11 +1,11 @@
 /// web interact packaging
+library;
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:dio/io.dart';
-export 'package:dio/dio.dart' show DioError;
+export 'package:dio/dio.dart' show DioException;
 
 import '../constants.dart';
 
@@ -16,7 +16,7 @@ class webinfo {
 
   // BuildContext? context;
   late Options _options;
-  static Dio dio = new Dio(BaseOptions(
+  static Dio dio = Dio(BaseOptions(
     baseUrl: serverurl,
   ));
 
