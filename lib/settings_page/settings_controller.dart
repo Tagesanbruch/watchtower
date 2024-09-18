@@ -34,12 +34,19 @@ class SettingsController extends GetxController
     );
   }
 
-  void sendCommand(int modeECG) async {
+  void setECGMode(int modeECG) async {
     final clearBuffer = Uint8List(32); // Creates a list of 32 zero bytes
     final command = "setECGmode $modeECG ";
     final signalController = Get.find<SignalController>();
     await signalController.sendBLE(String.fromCharCodes(clearBuffer));
     await signalController.sendBLE(command);
+  }
+
+  void sendCommand(String commandInput) async {
+    final clearBuffer = Uint8List(32); // Creates a list of 32 zero bytes
+    final signalController = Get.find<SignalController>();
+    await signalController.sendBLE(String.fromCharCodes(clearBuffer));
+    await signalController.sendBLE(commandInput);
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +22,20 @@ class Graph extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       ListView(padding: const EdgeInsets.symmetric(horizontal: 10), children: [
+        Obx(() {
+          final int batLevel = controller.batteryLevel.value;
+          return ListTile(
+            leading: const Icon(Icons.battery_0_bar),
+            title: const Text("Battery"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // BatteryWidget(batLevel),
+                Text('$batLevel%'),
+              ],
+            ),
+          );
+        }),
         Card(
             clipBehavior: Clip.hardEdge,
             child: Stack(children: [
@@ -226,22 +242,38 @@ class Graph extends StatelessWidget {
           SizedBox(
               height: 200,
               child: Obx(() {
-                final intervalHistoryData = [
-                  charts.Series<(int, int), int>(
-                      id: "interval",
-                      domainFn: (data, _) => data.$1,
-                      measureFn: (data, _) => data.$2,
-                      data: controller.intervalHistory())
-                ];
+                // final intervalHistoryData = [
+                //   charts.Series<(int, int), int>(
+                //       id: "interval",
+                //       domainFn: (data, _) => data.$1,
+                //       measureFn: (data, _) => data.$2,
+                //       data: controller.intervalHistory())
+                // ];
+                final List<charts.Series<RRData, int>> data = [];
+                final intervalHistoryData = controller.rrIntervalBuffer.toList();
+                data.add(charts.Series<RRData, int>(
+                      id: "rrInterval",
+                      domainFn: (RRData item, _) => item.index,
+                      measureFn: (RRData item, _) => item.rrInterval,
+                      data: intervalHistoryData,
+                      colorFn: (_, __) => freshColor,
+                    ));
+                final viewportStart = intervalHistoryData.isNotEmpty
+                    ? max(0, intervalHistoryData.last.index - peakBufferCapacity + 2)
+                    : 0;
+                final viewportEnd = intervalHistoryData.isNotEmpty
+                    ? controller.rrIntervalBufferEnd - 2
+                    : peakBufferCapacity - 2;
+
                 return charts.LineChart(
-                  intervalHistoryData,
+                  data,
                   animate: false, //TODO: animate
                   defaultRenderer:
                       charts.LineRendererConfig(includePoints: true),
-                  domainAxis: const charts.NumericAxisSpec(
-                      viewport:
-                          charts.NumericExtents(0, peakBufferCapacity - 2),
-                      renderSpec: charts.NoneRenderSpec()),
+                  domainAxis: charts.NumericAxisSpec(
+                    viewport: charts.NumericExtents(viewportStart, viewportEnd),
+                    renderSpec: charts.NoneRenderSpec(),
+                  ),
                   primaryMeasureAxis: const charts.NumericAxisSpec(
                       viewport: charts.NumericExtents(250, 1200)),
                   behaviors: [
@@ -262,21 +294,6 @@ class Graph extends StatelessWidget {
                 );
               }))
         ])),
-        
-        Obx(() {
-          final int batLevel = controller.batteryLevel.value;
-          return ListTile(
-            leading: const Icon(Icons.battery_0_bar),
-            title: const Text("Battery"),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // BatteryWidget(batLevel),
-                Text('$batLevel%'),
-              ],
-            ),
-          );
-        }),
         ListTile(
           leading: const Icon(Icons.bug_report),
           title: const Text("Debug"),

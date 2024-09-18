@@ -39,29 +39,47 @@ class SignalController extends GetxController {
     characteristicNotifiedSubscription =
         CentralManager.instance.characteristicNotified.listen(
       (eventArgs) {
-        if (eventArgs.characteristic.uuid != targetECGCharateristic &&
-            eventArgs.characteristic.uuid != targetIMUCharateristic &&
-            eventArgs.characteristic.uuid != targetBATCharateristic &&
-            eventArgs.characteristic.uuid != targetHRCharateristic) {
+        if (eventArgs.characteristic.uuid != targetMessageRXCharacteristic &&
+            eventArgs.characteristic.uuid != targetIMUCharacteristic &&
+            eventArgs.characteristic.uuid != targetBATCharacteristic &&
+            eventArgs.characteristic.uuid != targetHRCharacteristic) {
           return;
         }
         final packet = eventArgs.value;
-        if (eventArgs.characteristic.uuid == targetECGCharateristic) {
+        if (eventArgs.characteristic.uuid == targetMessageRXCharacteristic) {
           /// ECG packet decode
-          if (packet[0] == 0x06) {
-            //0x06 -- lead on
-            bufferController.leadIsOff.value = false;
-          } else if (packet[0] == 0x01) {
-            //0x01 -- lead off
-            bufferController.leadIsOff.value = true;
+          if (packet[0] == 0x06 || packet[0] == 0x01) {
+            if (packet[0] == 0x06) {
+              //0x06 -- lead on
+              bufferController.leadIsOff.value = false;
+            } else if (packet[0] == 0x01) {
+              //0x01 -- lead off
+              bufferController.leadIsOff.value = true;
+            }
+            final data = ECGData.fromPacket(packet);
+            if (!bufferController.leadIsOff.value) {
+              bufferController.extend(data);
+            }
+          }else if(packet[0] == 23) {
+            //0x17 -- RR interval
+            final rrData = RRData();
+            rrData.timestamp = DateTime.now().millisecondsSinceEpoch;
+            rrData.rrInterval = (packet[1] * 256 * 256 * 256 + packet[2] * 256 * 256 + packet[3] * 256 + packet[4]) * 1000 ~/ 32768;
+            rrData.index = bufferController.rrIntervalBuffer.length;
+            if(bufferController.rrIntervalBuffer.isEmpty){
+              bufferController.rrIntervalBufferStart.value = rrData.timestamp;
+            }
+            // bufferController.addRR(rrData);
+            bufferController.rrIntervalBuffer.add(rrData);
+            bufferController.averageOfLast50RRIntervalsCalc();
+            print("RR interval: ${rrData.rrInterval}");
           }
-          final data = ECGData.fromPacket(packet);
-          if (bufferController.leadIsOff == false) {
-            bufferController.extend(data);
+          else{
+            print("Unknown packet: $packet");
           }
-        } else if (eventArgs.characteristic.uuid == targetBATCharateristic) {
+        } else if (eventArgs.characteristic.uuid == targetBATCharacteristic) {
           bufferController.batteryLevel.value = packet[0];
-        } else if (eventArgs.characteristic.uuid == targetHRCharateristic) {
+        } else if (eventArgs.characteristic.uuid == targetHRCharacteristic) {
           bufferController.heartrateLevel.value = packet[1];
         }
       },
@@ -104,9 +122,9 @@ class SignalController extends GetxController {
     // outer:
     for (var service in services) {
       // inner:
-      if (service.uuid == targetECGService) {
+      if (service.uuid == targetMessageRXService) {
         for (var characteristic in service.characteristics) {
-          if (characteristic.uuid == targetECGCharateristic) {
+          if (characteristic.uuid == targetMessageRXCharacteristic) {
             targetECG = characteristic;
             target = targetECG;
           }
@@ -114,28 +132,28 @@ class SignalController extends GetxController {
       }
       if (service.uuid == targetIMUService) {
         for (var characteristic in service.characteristics) {
-          if (characteristic.uuid == targetIMUCharateristic) {
+          if (characteristic.uuid == targetIMUCharacteristic) {
             targetIMU = characteristic;
           }
         }
       }
       if (service.uuid == targetBATService) {
         for (var characteristic in service.characteristics) {
-          if (characteristic.uuid == targetBATCharateristic) {
+          if (characteristic.uuid == targetBATCharacteristic) {
             targetBAT = characteristic;
           }
         }
       }
       if (service.uuid == targetHRService) {
         for (var characteristic in service.characteristics) {
-          if (characteristic.uuid == targetHRCharateristic) {
+          if (characteristic.uuid == targetHRCharacteristic) {
             targetHR = characteristic;
           }
         }
       }
       if (service.uuid == targetMessageTXService) {
         for (var characteristic in service.characteristics) {
-          if (characteristic.uuid == targetMessageTXCharateristic) {
+          if (characteristic.uuid == targetMessageTXCharacteristic) {
             this.targetMessageTX = characteristic;
           }
         }
@@ -164,8 +182,8 @@ class SignalController extends GetxController {
   }
 
   Future<void> sendBLE(String message) async {
-    final byteslen = Uint8List.fromList(utf8.encode(message));
-    print(byteslen); 
+    // final byteslen = Uint8List.fromList(utf8.encode(message));
+    // print(byteslen);
     if (message.length > 32) {
       throw ArgumentError(
           'Message is too long. Maximum length is 32 characters.');

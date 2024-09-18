@@ -38,6 +38,11 @@ class BufferController extends GetxController
   /// in order to achieve a wipe-off/overwrite effect
   final Queue<ECGData> buffer = Queue();
 
+  /// R-R interval buffer
+  final Queue<RRData> rrIntervalBuffer = Queue();
+  int get rrIntervalBufferEnd => rrIntervalBuffer.length;
+  final rrIntervalBufferStart = 0.obs; 
+
   /// the time when the last packet arrived
   DateTime? lastPackArrivalTime;
 
@@ -81,8 +86,21 @@ class BufferController extends GetxController
   /// tweens the cursor between packets
   late Animation<int> tween;
 
+  /// RR buffer length
+  int rrIntervalBufferLength = 1000;
+
   /// whether the initial data has been filled
   bool get isFilled => buffer.length >= graphBufferLength;
+  bool get isRRFilled => rrIntervalBuffer.length >= rrIntervalBufferLength;
+
+  final averageOfLast50RRIntervals = 0.obs;
+  // int get averageOfLast50RRIntervals {
+  //   final count = rrIntervalBuffer.length;
+  //   final start = count > 50 ? count - 50 : 0;
+  //   final last50RRIntervals = rrIntervalBuffer.toList().sublist(start);
+  //   final sum = last50RRIntervals.fold(0, (prev, element) => prev + element.rrInterval);
+  //   return sum ~/ last50RRIntervals.length;
+  // }
 
   /// reset everything
   void reset() {
@@ -109,6 +127,23 @@ class BufferController extends GetxController
       buffer.add(item);
       updatePercentage();
     }
+  }
+
+  void addRR(RRData item){
+    if (isRRFilled){
+      rrIntervalBuffer.add(item);
+      rrIntervalBuffer.removeFirst();
+    } else{
+      rrIntervalBuffer.add(item);
+    }
+  }
+
+  void averageOfLast50RRIntervalsCalc(){
+    final count = rrIntervalBuffer.length;
+    final start = count > 50 ? count - 50 : 0;
+    final last50RRIntervals = rrIntervalBuffer.toList().sublist(start);
+    final sum = last50RRIntervals.fold(0, (prev, element) => prev + element.rrInterval);
+    averageOfLast50RRIntervals.value = sum ~/ last50RRIntervals.length;
   }
 
   /// pushes a list of frames into the buffer

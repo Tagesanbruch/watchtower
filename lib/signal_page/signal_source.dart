@@ -1,6 +1,6 @@
 import 'package:bluetooth_low_energy/bluetooth_low_energy.dart';
 
-enum SignalSourceType { ble, mock }
+enum SignalSourceType { ble, mock, resp }
 
 class SignalSource {
   final SignalSourceType type;

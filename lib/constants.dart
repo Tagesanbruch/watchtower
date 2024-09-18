@@ -28,7 +28,7 @@ const int delayMs = 1000 ~/ fs * packLength;
 
 const int graphBufferLength = 3000;
 
-const int peakBufferCapacity = 12;
+const int peakBufferCapacity = 1000;
 
 void initGlobalControllers() {
   Get.put(BufferController(pipelines: pipelines, detector: detector));

@@ -6,7 +6,7 @@ import 'settings_controller.dart';
 
 class ButtonX extends GetxController {
   RxInt selectedIndex = 0.obs;
-  final options = ['原始ADC数据', '原始ADC数据 / 2', '原始ADC数据 / 4', 'PT高通滤波', 'PT低通滤波'];
+  final options = ['原始ADC数据 / 4', '原始ADC数据 / 2', '原始ADC数据', 'PT高通滤波', 'PT低通滤波'];
 
   void select(int index) => selectedIndex.value = index;
 }
@@ -62,7 +62,7 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, // Set your desired height here
+                          height: 50, 
                           child: const ListTile(
                             title: Text('心电图绘制数据选择'),
                           ),
@@ -99,7 +99,7 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, // Set your desired height here
+                          height: 50, 
                           child: const ListTile(
                             title: Text('心率警报范围'),
                           ),
@@ -138,7 +138,7 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, // Set your desired height here
+                          height: 50,
                           child: const ListTile(
                             title: Text('控制指令'),
                           ),
@@ -165,7 +165,9 @@ class SettingsPage extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.send),
                               onPressed: () {
-                                // Handle send button press
+                                var textFieldX = Get.find<TextFieldX>();
+                                var text = textFieldX.controller.value.text;
+                                  controller.sendCommand(text);
                               },
                             ),
                           ],
@@ -178,7 +180,7 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, // Set your desired height here
+                          height: 50,
                           child: const ListTile(
                             title: Text('选项'),
                           ),
@@ -205,13 +207,13 @@ class SettingsPage extends StatelessWidget {
                 child: const Text('Apply', style: TextStyle(color: Colors.blue)),
                 onPressed: () {
                   var buttonX = Get.find<ButtonX>();
-                  controller.sendCommand(buttonX.selectedIndex.value);
+                  controller.setECGMode(buttonX.selectedIndex.value);
                 },
               ),
               TextButton(
                 child: const Text('Reset', style: TextStyle(color: Colors.blue)),
                 onPressed: () {
-                  // Handle reset button press
+                  null; // Reset all settings
                 },
               ),
             ],

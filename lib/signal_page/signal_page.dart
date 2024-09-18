@@ -65,7 +65,7 @@ class SignalPage extends StatelessWidget {
                       : const TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'No Leads Detected',
+                            hintText: '导联未连接，请检查佩戴',
                           ),
                         ),
                 ) // PipelineGraph(pipelines, detectors)

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
@@ -6,6 +7,12 @@ import 'constants.dart';
 
 /// size in bytes for each packet
 const packSize = 4 * 2; // 4 bytes for each int and float
+
+class RRData{
+  late int timestamp; 
+  late int rrInterval;
+  late int index;
+}
 
 /// internal struct that BLE transmissions decode to
 class ECGData {

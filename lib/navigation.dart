@@ -9,6 +9,7 @@ import 'record_page/record_page.dart';
 import 'signal_page/signal_page.dart';
 import 'view_record_page/view_record_page.dart';
 import 'settings_page/settings_page.dart';
+import 'mock_page/resp_page.dart';
 
 /// start with bluetooth view
 const entryURL = "/bluetooth";
@@ -37,6 +38,9 @@ final List<AppPage> navigationList = [
       hidden: true), //TODO: change Icon
   AppPage("settings", "Settings", () => SettingsPage(), Icons.settings,
       Icons.settings,
+      hidden: true),
+  AppPage("respiratory", "Respiratory", () => RespPage(), Icons.settings,
+      Icons.health_and_safety,
       hidden: true),
 ];
 
