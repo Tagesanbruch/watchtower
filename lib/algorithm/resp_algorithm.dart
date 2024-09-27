@@ -36,6 +36,11 @@ class RespAlgorithm {
     return diffList;
   }
 
+  /// function as numpy.abs
+  List<double> abs(List<double> list) {
+    return list.map((e) => e.abs()).toList();
+  }
+
   // 插值函数
   // 保持插值，返回插值后的RR间歇序列
   List<double> intepol(List<int> rpeaks, int dataLength) {
@@ -128,7 +133,9 @@ class RespAlgorithm {
       else if (inds.length < n) {
         edrRate[t] = 60 * fs / mean(diff(inds));
       } else {
-        List<double> edrPer = inds.reversed.toList().getRange(0, n).map((ind) => ind.toDouble()).toList();
+        List<int> indsDiff = diff(inds.reversed.toList());
+        List<double> indsDiffDouble = indsDiff.map((e) => e.toDouble()).toList();
+        List<double> edrPer = abs(indsDiffDouble);
         double edrPerMed = median(edrPer);
         edrPer = edrPer.where((per) => per < edrPerMed * 1.5 && per > edrPerMed * 0.6).toList();
         // edrRate[t] = round(60 * fs / mean(edrPer));
