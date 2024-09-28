@@ -16,7 +16,7 @@ class MockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return makePage(
-        "Setup Mock Device",
+        "setupMockDevice",
         Container(
             alignment: AlignmentDirectional.center,
             child: Column(children: [
@@ -26,7 +26,7 @@ class MockPage extends StatelessWidget {
               Obx(() => controller.previousFile.value == ""
                   ? Container()
                   : FilledButton(
-                      child: const Text("Load Previous"),
+                      child: Text("Load Previous".tr),
                       onPressed: () {
                         controller.bufferController.reset();
                         Get.put(MockController(controller.previousFile.value,
@@ -43,24 +43,24 @@ class MockPage extends StatelessWidget {
               FilledButton(
                   onPressed: () async =>
                       awaitWithOverlay(controller.promptLoadFromDataset),
-                  child: const Text("Open File")),
+                  child: Text("Open File".tr)),
               const SizedBox(
                 height: 10,
               ),
               FilledButton(
                   onPressed: () async =>
                       awaitWithOverlay(controller.promptLoadIntoDB),
-                  child: const Text("Load file to database")),
+                  child: Text("Load file to database".tr)),
               const SizedBox(height: 10),
               FilledButton(
                   onPressed: () async => awaitWithOverlay(promptBench),
-                  child: const Text("Begin Benchmarking")),
+                  child: Text("Begin Benchmarking".tr)),
               const SizedBox(height: 10),
               FilledButton(
                   onPressed: () {
                     Get.toNamed("/respiratory");
                   },
-                  child: const Text("Respiration Rate Demo")),
+                  child: Text("Respiration Rate Demo".tr)),
             ])));
   }
 }

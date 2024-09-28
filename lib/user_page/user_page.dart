@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:watchtower/translations/translations.dart';
 
 import '../navigation.dart';
 import 'user_controller.dart';

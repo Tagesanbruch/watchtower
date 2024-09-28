@@ -1,10 +1,15 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
 
+// import 'l10n/localization_intl.dart';
+import 'translations/translations.dart';
 import 'constants.dart';
 import 'navigation.dart';
 
@@ -37,14 +42,29 @@ class App extends StatelessWidget {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
     return GetMaterialApp(
-        title: 'Watchtower',
-
+        
+        translations: Messages(),
+        locale: Locale('zh', 'CN'),
+        fallbackLocale: Locale('en', 'US'),
+        title: 'Watchtower'.tr,
+        // localizationsDelegates: const [
+        //   // S.delegate,
+        //   DefaultMaterialLocalizations.delegate,
+        //   DefaultCupertinoLocalizations.delegate,
+        //   DefaultWidgetsLocalizations.delegate,
+        //   DemoLocalizationsDelegate()
+        //   // DefaultCupertinoLocalizations.delegate,
+        // ],
+        // supportedLocales: const [
+        //   Locale('en', 'US'),
+        //   Locale('zh', 'CN'),
+        // ],
         /// app title displayed in system app switcher, etc.
         themeMode: ThemeMode.system,
         navigatorKey: Get.key,
         initialRoute: entryURL,
         builder: (context, child) {
-          child = easyload(context, child); //TODO: fix the EasyLoading Initial
+          child = easyload(context, child);
           return Scaffold(
             key: scaffoldKey,
 
@@ -65,7 +85,7 @@ class App extends StatelessWidget {
                     /// navigationDrawer items
                     ...shownNavigationList.map((entry) =>
                         NavigationDrawerDestination(
-                            label: Text(entry.title),
+                            label: Text(entry.title.tr),
                             icon: Icon(entry.icon),
                             selectedIcon: Icon(entry.selectedIcon)))
                   ],

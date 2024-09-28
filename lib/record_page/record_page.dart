@@ -20,12 +20,13 @@ class RecordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return makePage(
-      "Record Management",
+      "Record Management".tr,
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Obx(() => Padding(
               padding: const EdgeInsets.only(top: 10, left: 20, right: 20),
               child: Text(
-                "${controller.records.length} records available.",
+                // "${controller.records.length} records available.",
+                "Records Available".trParams({"length": controller.records.length.toString()}),
                 style: theme.textTheme.titleMedium,
               ),
             )),

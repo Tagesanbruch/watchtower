@@ -16,7 +16,7 @@ class BluetoothPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return makePage(
-        "Select Bluetooth Device",
+        "selectBluetoothDevice",
         Column(
           children: [
             const SizedBox(height: 10),
@@ -32,7 +32,7 @@ class BluetoothPage extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              const Text("Peripherals:"),
+              Text("Peripherals:".tr),
             ]),
             const SizedBox(
               height: 5,

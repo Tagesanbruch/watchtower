@@ -1,0 +1,13 @@
+{
+    "@@locale": "en",
+    "setupBLEDevice": "Setup Bluetooth Device",
+    "setupMockDevice": "Setup Mock Device",
+    "viewSignal": "View Signal",
+    "recordManagement": "Record Management",
+    "viewSignalRecord": "View Signal Record",
+    "userPage": "User Page",
+    "login": "Login",
+    "register": "Register",
+    "settings": "Settings",
+    "respiratory": "Respiratory"
+  }

@@ -6,6 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import bluetooth_low_energy_darwin
+import flutter_local_notifications
 import path_provider_foundation
 import share_plus
 import shared_preferences_foundation
@@ -14,6 +15,7 @@ import sqlite3_flutter_libs
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   BluetoothLowEnergyDarwin.register(with: registry.registrar(forPlugin: "BluetoothLowEnergyDarwin"))
+  FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
   SharePlusMacosPlugin.register(with: registry.registrar(forPlugin: "SharePlusMacosPlugin"))
   SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))

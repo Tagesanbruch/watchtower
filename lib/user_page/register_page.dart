@@ -24,7 +24,7 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return makePage(
-      "Register",
+      "register".tr,
       Form(
         // key: ?key,
         autovalidateMode: AutovalidateMode.onUserInteraction,

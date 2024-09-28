@@ -31,7 +31,7 @@ class RespPageController extends GetxController {
   List<int> peaks = [];
   List<double> edrRate = [];
 
-  RespAlgorithm respAlgorithm = RespAlgorithm(); // 创建RespAlgorithm的实例
+  RespAlgorithm respAlgorithm = RespAlgorithm(); 
 
   @override
   void onInit() {

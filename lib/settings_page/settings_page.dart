@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+// import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '../navigation.dart';
+// import 'package:watchtower/translations/translations.dart';
+// import 'package:watchtower/generated/l10n.dart';
+// import 'package:watchtower/generated/intl/messages_all.dart';
 import 'settings_controller.dart';
 
 class ButtonX extends GetxController {
   RxInt selectedIndex = 0.obs;
-  final options = ['原始ADC数据 / 4', '原始ADC数据 / 2', '原始ADC数据', 'PT高通滤波', 'PT低通滤波'];
+  final options = [
+    "Raw ADC Data",
+    "Raw ADC Data / 2",
+    "Raw ADC Data / 4",
+    "PT High Pass Filter",
+    "PT Low Pass Filter"
+  ];
 
   void select(int index) => selectedIndex.value = index;
 }
@@ -43,12 +53,13 @@ class SettingsPage extends StatelessWidget {
     1: PanelController(),
     2: PanelController(),
     3: PanelController(),
+    4: PanelController(),
   };
 
   @override
   Widget build(BuildContext context) {
     return makePage(
-      "Settings Page",
+      "Settings Page".tr,
       Column(
         children: [
           Expanded(
@@ -62,9 +73,9 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, 
-                          child: const ListTile(
-                            title: Text('心电图绘制数据选择'),
+                          height: 50,
+                          child: ListTile(
+                            title: Text("ECG Data Selection".tr),
                           ),
                         );
                       },
@@ -75,7 +86,7 @@ class SettingsPage extends StatelessWidget {
                             const SizedBox(
                               width: 20,
                             ),
-                            const Text('心电数据类型：'),
+                            Text("ECG Data Type".tr),
                             const SizedBox(
                               width: 20,
                             ),
@@ -84,7 +95,7 @@ class SettingsPage extends StatelessWidget {
                               items: bx.options.map((String value) {
                                 return DropdownMenuItem<int>(
                                   value: bx.options.indexOf(value),
-                                  child: Text(value),
+                                  child: Text(value.tr),
                                 );
                               }).toList(),
                               onChanged: (newValue) => bx.select(newValue!),
@@ -99,9 +110,9 @@ class SettingsPage extends StatelessWidget {
                       canTapOnHeader: true,
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
-                          height: 50, 
-                          child: const ListTile(
-                            title: Text('心率警报范围'),
+                          height: 50,
+                          child: ListTile(
+                            title: Text("Heart Rate Alert Range".tr),
                           ),
                         );
                       },
@@ -139,8 +150,8 @@ class SettingsPage extends StatelessWidget {
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
                           height: 50,
-                          child: const ListTile(
-                            title: Text('控制指令'),
+                          child: ListTile(
+                            title: Text("Control Command".tr),
                           ),
                         );
                       },
@@ -153,9 +164,10 @@ class SettingsPage extends StatelessWidget {
                                 controller: tx.controller.value,
                                 onChanged: (newText) => tx.updateText(newText),
                                 decoration: InputDecoration(
-                                  hintText: '请输入命令',
+                                  hintText: "Please Enter Command".tr,
                                   border: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Colors.grey),
+                                    borderSide:
+                                        const BorderSide(color: Colors.grey),
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                   contentPadding: const EdgeInsets.all(10.0),
@@ -167,7 +179,7 @@ class SettingsPage extends StatelessWidget {
                               onPressed: () {
                                 var textFieldX = Get.find<TextFieldX>();
                                 var text = textFieldX.controller.value.text;
-                                  controller.sendCommand(text);
+                                controller.sendCommand(text);
                               },
                             ),
                           ],
@@ -181,8 +193,8 @@ class SettingsPage extends StatelessWidget {
                       headerBuilder: (BuildContext context, bool isExpanded) {
                         return SizedBox(
                           height: 50,
-                          child: const ListTile(
-                            title: Text('选项'),
+                          child: ListTile(
+                            title: Text("Options".tr),
                           ),
                         );
                       },
@@ -197,6 +209,84 @@ class SettingsPage extends StatelessWidget {
                       isExpanded:
                           panelControllers[3]?.isExpanded.value ?? false,
                     ),
+
+                    /// Language Selection
+                    // ExpansionPanel(
+                    //   canTapOnHeader: true,
+                    //   headerBuilder: (BuildContext context, bool isExpanded) {
+                    //     return SizedBox(
+                    //       height: 50,
+                    //       child: ListTile(
+                    //         title: Text("Language".tr),
+                    //       ),
+                    //     );
+                    //   },
+                    //   body: Column(
+                    //     children: [
+                    //       ListTile(
+                    //         title: Text("English"),
+                    //         onTap: () {
+                    //           Get.updateLocale(const Locale('en', 'US'));
+                    //         },
+                    //       ),
+                    //       ListTile(
+                    //         title: Text("中文"),
+                    //         onTap: () {
+                    //           Get.updateLocale(const Locale('zh', 'CN'));
+                    //         },
+                    //       ),
+                    //     ],
+                    //   ),
+                    //   isExpanded: false,
+                    // )
+                    ExpansionPanel(
+                      canTapOnHeader: true,
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return SizedBox(
+                          height: 50,
+                          child: ListTile(
+                            title: Text("Language".tr),
+                          ),
+                        );
+                      },
+                      body: Column(
+                        children: [
+                          ListTile(
+                            title: Text("English"),
+                            onTap: () {
+                              Get.updateLocale(const Locale('en', 'US'));
+                            },
+                          ),
+                          ListTile(
+                            title: Text("中文"),
+                            onTap: () {
+                              Get.updateLocale(const Locale('zh', 'CN'));
+                            },
+                          ),
+                        ],
+                      ),
+                      // body:
+                      // Obx(() {
+                      //   return Column(
+                      //     children: [
+                      //       ListTile(
+                      //         title: Text("English"),
+                      //         onTap: () {
+                      //           Get.updateLocale(const Locale('en', 'US'));
+                      //         },
+                      //       ),
+                      //       ListTile(
+                      //         title: Text("中文"),
+                      //         onTap: () {
+                      //           Get.updateLocale(const Locale('zh', 'CN'));
+                      //         },
+                      //       ),
+                      //     ],
+                      //   );
+                      // }),
+                      isExpanded:
+                          panelControllers[4]?.isExpanded.value ?? false,
+                    ),
                   ],
                 )),
           )),
@@ -204,14 +294,16 @@ class SettingsPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
-                child: const Text('Apply', style: TextStyle(color: Colors.blue)),
+                child: Text("Apply".tr,
+                    style: const TextStyle(color: Colors.blue)),
                 onPressed: () {
                   var buttonX = Get.find<ButtonX>();
                   controller.setECGMode(buttonX.selectedIndex.value);
                 },
               ),
               TextButton(
-                child: const Text('Reset', style: TextStyle(color: Colors.blue)),
+                child: Text("Reset".tr,
+                    style: const TextStyle(color: Colors.blue)),
                 onPressed: () {
                   null; // Reset all settings
                 },

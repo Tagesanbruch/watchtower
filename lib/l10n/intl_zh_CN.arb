@@ -1,0 +1,14 @@
+{
+    "@@locale": "zh_CN", 
+    "setupBLEDevice": "蓝牙设备连接",
+    "setupMockDevice": "设置模拟设备",
+    "viewSignal": "查看当前信号",
+    "recordManagement": "历史记录管理",
+    "viewSignalRecord": "查看历史记录",
+    "userPage": "用户页面",
+    "login": "登录",
+    "register": "注册",
+    "settings": "设置",
+    "respiratory": "呼吸率",
+    "teststring": "这是一个测试字符串"
+  }
