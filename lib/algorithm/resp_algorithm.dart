@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 
 class RespAlgorithm {
-
   /// function as numpy.argmax
   int argmax(List<double> list) {
     return list.indexOf(list.reduce(max));
@@ -27,6 +26,7 @@ class RespAlgorithm {
   double meanDouble(List<double> list) {
     return list.reduce((a, b) => a + b) / list.length;
   }
+
   /// function as numpy.diff
   List<int> diff(List<int> list) {
     List<int> diffList = [];
@@ -47,9 +47,11 @@ class RespAlgorithm {
     List<double> rr = List<double>.filled(dataLength, 0);
     rr.fillRange(0, rpeaks[2], (rpeaks[1] - rpeaks[0]).toDouble());
     for (int i = 2; i < rpeaks.length - 1; i++) {
-      rr.fillRange(rpeaks[i], rpeaks[i + 1], (rpeaks[i] - rpeaks[i - 1]).toDouble());
+      rr.fillRange(
+          rpeaks[i], rpeaks[i + 1], (rpeaks[i] - rpeaks[i - 1]).toDouble());
     }
-    rr.fillRange(rpeaks.last, rr.length, (rpeaks.last - rpeaks[rpeaks.length - 2]).toDouble());
+    rr.fillRange(rpeaks.last, rr.length,
+        (rpeaks.last - rpeaks[rpeaks.length - 2]).toDouble());
     return rr;
   }
 
@@ -62,8 +64,13 @@ class RespAlgorithm {
     List<double> edr = List<double>.filled(dataLength, 0);
     edr.setRange(0, 4, ecgRate.getRange(0, 4).toList());
     for (int i = 4; i < dataLength; i++) {
-      edr[i] = 32 * ecgRate[i] - 64 * ecgRate[i - 2] + 32 * ecgRate[i - 4]
-          + 15176 * edr[i - 1] - 21218 * edr[i - 2] + 13274 * edr[i - 3] - 3137 * edr[i - 4];
+      edr[i] = 32 * ecgRate[i] -
+          64 * ecgRate[i - 2] +
+          32 * ecgRate[i - 4] +
+          15176 * edr[i - 1] -
+          21218 * edr[i - 2] +
+          13274 * edr[i - 3] -
+          3137 * edr[i - 4];
       edr[i] = edr[i] / 4096;
     }
     return edr;
@@ -111,12 +118,16 @@ class RespAlgorithm {
       double ics = (zeroDown[i] - zeroDown[i - 1]).toDouble();
       double dcs = (zeroDown[i] - zeroUp[i]).toDouble();
       if (ics > mics && dcs > mdcs) {
-        peakInd = edr.getRange(zeroUp[i], zeroDown[i]).toList().indexOf(edr.getRange(zeroUp[i], zeroDown[i]).reduce(max));
+        peakInd = edr
+            .getRange(zeroUp[i], zeroDown[i])
+            .toList()
+            .indexOf(edr.getRange(zeroUp[i], zeroDown[i]).reduce(max));
         peaks.add(peakInd + zeroUp[i]);
       }
     }
 
-    double peakMed = median(edr.where((element) => peaks.contains(edr.indexOf(element))).toList());
+    double peakMed = median(
+        edr.where((element) => peaks.contains(edr.indexOf(element))).toList());
     double pmin = pminFact * peakMed;
     peaks = peaks.where((peak) => edr[peak] > pmin).toList();
 
@@ -127,21 +138,33 @@ class RespAlgorithm {
     List<double> edrRate = List<double>.filled(timeLength, 0);
     for (int t = 0; t < timeLength; t++) {
       List<int> inds = peaks.where((peak) => peak <= (t + 1) * fs).toList();
-      if(inds.length <= 2){
+      if (inds.length <= 2) {
         edrRate[t] = 0;
-      }
-      else if (inds.length < n) {
+      } else if (inds.length < n) {
         edrRate[t] = 60 * fs / mean(diff(inds));
       } else {
         List<int> indsDiff = diff(inds.reversed.toList());
-        List<double> indsDiffDouble = indsDiff.map((e) => e.toDouble()).toList();
+        List<double> indsDiffDouble =
+            indsDiff.map((e) => e.toDouble()).toList();
         List<double> edrPer = abs(indsDiffDouble);
         double edrPerMed = median(edrPer);
-        edrPer = edrPer.where((per) => per < edrPerMed * 1.5 && per > edrPerMed * 0.6).toList();
+        edrPer = edrPer
+            .where((per) => per < edrPerMed * 1.5 && per > edrPerMed * 0.6)
+            .toList();
         // edrRate[t] = round(60 * fs / mean(edrPer));
         edrRate[t] = 60 * fs / meanDouble(edrPer);
       }
     }
+    return edrRate;
+  }
+
+  /// Respiration Rate Calculation from R-peaks
+  List<double> processResp(List<int> rpeaks, int fs, int fsDown, int timeLength, int n) {
+    List<double> rr = intepol(rpeaks, timeLength * fsDown);
+    List<double> ecgRate = rr.map((value) => 60 * fsDown / value).toList();
+    List<double> edr = bandpassFilter(ecgRate);
+    List<int> peaks = edrPeak(edr, fsDown);
+    List<double> edrRate = respCalculate(peaks, fsDown, timeLength, n);
     return edrRate;
   }
 }

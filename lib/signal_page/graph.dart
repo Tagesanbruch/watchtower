@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart';
+import 'package:community_charts_common/src/chart/common/behavior/chart_behavior.dart';
+import 'package:community_charts_flutter/src/behaviors/chart_behavior.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smooth_counter/smooth_counter.dart';
@@ -11,6 +13,52 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../ecg_data.dart';
 import 'buffer_controller.dart';
 import '../constants.dart';
+import '../algorithm/resp_algorithm.dart';
+
+/// Background Drawing
+// class GridlineBackground extends charts.ChartBehavior<charts.NumericCartesianChart> {
+//   @override
+//   void paint(charts.ChartCanvas canvas, charts.ChartContext context, {required Rect drawBounds, required charts.ChartBehaviorPosition position}) {
+//     final paint = charts.ChartCanvas.makePaint()
+//       ..color = charts.ColorUtil.fromDartColor(Colors.orange)
+//       ..strokeWidth = 1.0;
+
+//     final stepX = drawBounds.width / 10;
+//     final stepY = drawBounds.height / 10;
+
+//     for (double x = drawBounds.left; x <= drawBounds.right; x += stepX) {
+//       canvas.drawLine(
+//         points: [charts.Point(x, drawBounds.top), charts.Point(x, drawBounds.bottom)],
+//         paint: paint,
+//       );
+//     }
+
+//     for (double y = drawBounds.top; y <= drawBounds.bottom; y += stepY) {
+//       canvas.drawLine(
+//         points: [charts.Point(drawBounds.left, y), charts.Point(drawBounds.right, y)],
+//         paint: paint,
+//       );
+//     }
+//   }
+
+//   @override
+//   String get role => 'gridlineBackground';
+
+//   @override
+//   ChartBehavior<charts.NumericCartesianChart> createCommonBehavior() {
+//     // TODO: implement createCommonBehavior
+//     throw UnimplementedError();
+//   }
+
+//   @override
+//   // TODO: implement desiredGestures
+//   Set<GestureType> get desiredGestures => throw UnimplementedError();
+
+//   @override
+//   void updateCommonBehavior(ChartBehavior<charts.NumericCartesianChart> commonBehavior) {
+//     // TODO: implement updateCommonBehavior
+//   }
+// }
 
 /// the length of the hidden segment
 const hiddenLength = packLength;
@@ -146,8 +194,8 @@ class Graph extends StatelessWidget {
                     // }
 
                     /// fresh frames
-                    List<ECGData> bufferList = ListSlice(
-                        buffer.toList(), 0, (graphBufferLength * 2 ~/ 3)); //Slice to adapted index
+                    List<ECGData> bufferList = ListSlice(buffer.toList(), 0,
+                        (graphBufferLength * 2 ~/ 3)); //Slice to adapted index
 
                     List<ECGData> firstPart = [];
                     List<ECGData> secondPart = [];
@@ -185,14 +233,71 @@ class Graph extends StatelessWidget {
                     return charts.LineChart(
                       data,
                       animate: false,
-                      domainAxis: const charts.NumericAxisSpec(
-                        viewport:
-                            charts.NumericExtents(0, graphBufferLength - 1),
-                        renderSpec: charts.NoneRenderSpec(),
+                      domainAxis: charts.NumericAxisSpec(
+                        viewport: const charts.NumericExtents(
+                            0, graphBufferLength - 1),
+                        renderSpec: charts.GridlineRendererSpec(
+                          labelStyle: const charts.TextStyleSpec(
+                            fontSize: 4,
+                            color: charts.MaterialPalette.black,
+                          ),
+                          lineStyle: charts.LineStyleSpec(
+                            color:
+                                charts.MaterialPalette.green.shadeDefault,
+                          ),
+                        ),
+                        tickProviderSpec:
+                            const charts.BasicNumericTickProviderSpec(
+                          desiredTickCount: 100, // 设置X轴的线距
+                        ),
+                        // tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                        //   (num value) {
+                        //     if (value % 1000 == 0) {
+                        //       return value.toString(); // 每1000格标注
+                        //     }
+                        //     return ''; // 中间不标注
+                        //   } as charts.MeasureFormatter?,
+                        // ),
                       ),
-                      primaryMeasureAxis: const charts.NumericAxisSpec(
-                        renderSpec: charts.NoneRenderSpec(),
-                        viewport: charts.NumericExtents(lowerLimit, upperLimit),
+                      primaryMeasureAxis: charts.NumericAxisSpec(
+                        renderSpec: charts.GridlineRendererSpec(
+                          labelStyle: const charts.TextStyleSpec(
+                            fontSize: 12,
+                            color: charts.MaterialPalette.black,
+                          ),
+                          lineStyle: charts.LineStyleSpec(
+                            color:
+                                charts.MaterialPalette.green.shadeDefault,
+                          ),
+                        ),
+                        tickProviderSpec:
+                            const charts.StaticNumericTickProviderSpec(
+                          <charts.TickSpec<num>>[
+                            charts.TickSpec(-1.0),
+                            charts.TickSpec(-0.9),
+                            charts.TickSpec(-0.8),
+                            charts.TickSpec(-0.7),
+                            charts.TickSpec(-0.6),
+                            charts.TickSpec(-0.5),
+                            charts.TickSpec(-0.4),
+                            charts.TickSpec(-0.3),
+                            charts.TickSpec(-0.2),
+                            charts.TickSpec(-0.1),
+                            charts.TickSpec(0),
+                            charts.TickSpec(0.1),
+                            charts.TickSpec(0.2),
+                            charts.TickSpec(0.3),
+                            charts.TickSpec(0.4),
+                            charts.TickSpec(0.5),
+                            charts.TickSpec(0.6),
+                            charts.TickSpec(0.7),
+                            charts.TickSpec(0.8),
+                            charts.TickSpec(0.9),
+                            charts.TickSpec(1.0),
+                          ],
+                        ),
+                        viewport:
+                            const charts.NumericExtents(lowerLimit, upperLimit),
                       ),
                       behaviors: [charts.RangeAnnotation(rangeAnnotations)],
                     );
@@ -250,16 +355,18 @@ class Graph extends StatelessWidget {
                 //       data: controller.intervalHistory())
                 // ];
                 final List<charts.Series<RRData, int>> data = [];
-                final intervalHistoryData = controller.rrIntervalBuffer.toList();
+                final intervalHistoryData =
+                    controller.rrIntervalBuffer.toList();
                 data.add(charts.Series<RRData, int>(
-                      id: "rrInterval",
-                      domainFn: (RRData item, _) => item.index,
-                      measureFn: (RRData item, _) => item.rrInterval,
-                      data: intervalHistoryData,
-                      colorFn: (_, __) => freshColor,
-                    ));
+                  id: "rrInterval",
+                  domainFn: (RRData item, _) => item.index,
+                  measureFn: (RRData item, _) => item.rrInterval,
+                  data: intervalHistoryData,
+                  colorFn: (_, __) => freshColor,
+                ));
                 final viewportStart = intervalHistoryData.isNotEmpty
-                    ? max(0, intervalHistoryData.last.index - peakBufferCapacity + 2)
+                    ? max(0,
+                        intervalHistoryData.last.index - peakBufferCapacity + 2)
                     : 0;
                 final viewportEnd = intervalHistoryData.isNotEmpty
                     ? controller.rrIntervalBufferEnd - 2
@@ -309,6 +416,40 @@ class Graph extends StatelessWidget {
           title: const Text("Settings"),
           onTap: () {
             Get.toNamed("/settings");
+          },
+        ),
+        Obx(() => ListTile(
+              leading: const Icon(Icons.heat_pump_rounded),
+              title: const Text("Respiratory Rate"),
+              trailing: Text(
+                controller.respiratoryRate.value.toString(),
+                style: const TextStyle(fontSize: 20),
+              ),
+              onTap: () {
+                try {
+                  final rrInterval = controller.rrIntervalBuffer.toList();
+                  List<int> rrPeaksList = [];
+                  rrPeaksList.add(0);
+                  for (int i = 1; i < rrInterval.length; i++) {
+                    rrPeaksList
+                        .add(rrInterval[i].rrInterval + rrPeaksList.last);
+                  }
+                  final timeLength =
+                      (rrPeaksList.last - rrPeaksList.first) ~/ 1000;
+                  final respRate = RespAlgorithm()
+                      .processResp(rrPeaksList, 1000, 10, timeLength, 9);
+                  print(respRate);
+                  controller.respiratoryRate.value = respRate[-1].toInt();
+                } catch (e) {
+                  print('Error calculating respRate: $e');
+                }
+              },
+            )),
+        ListTile(
+          leading: const Icon(Icons.clear_all),
+          title: const Text("Clear RRInterval(Debug)"),
+          onTap: () {
+            controller.rrIntervalBuffer.clear();
           },
         ),
         const SizedBox(

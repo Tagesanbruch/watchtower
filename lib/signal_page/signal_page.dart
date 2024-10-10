@@ -60,7 +60,7 @@ class SignalPage extends StatelessWidget {
                 // const ECGGraph(),
                 Obx(
                   () => bufferController.percentage.value == 1.0
-                         && bufferController.leadIsOff == false
+                        //  && bufferController.leadIsOff == false
                       ? Expanded(child: Graph())
                       : const TextField(
                           decoration: InputDecoration(

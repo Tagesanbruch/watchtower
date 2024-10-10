@@ -40,7 +40,7 @@ const staleColor = charts.Color(r: 0xee, g: 0xcc, b: 0xcc);
 
 const hiddenColor = charts.Color(r: 0xfe, g: 0xfe, b: 0xfe);
 
-const upperLimit = 1.5;
+const upperLimit = 1;
 const lowerLimit = -1;
 
 const markLength = 40;

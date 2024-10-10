@@ -77,6 +77,9 @@ class BufferController extends GetxController
 
   final batteryLevel = 0.obs;
 
+  /// Respiratory rate
+  final respiratoryRate = 0.obs;
+
   /// HR from device
   final heartrateLevel = 0.obs;
 

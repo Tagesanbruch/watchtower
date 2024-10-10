@@ -265,25 +265,6 @@ class SettingsPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // body:
-                      // Obx(() {
-                      //   return Column(
-                      //     children: [
-                      //       ListTile(
-                      //         title: Text("English"),
-                      //         onTap: () {
-                      //           Get.updateLocale(const Locale('en', 'US'));
-                      //         },
-                      //       ),
-                      //       ListTile(
-                      //         title: Text("中文"),
-                      //         onTap: () {
-                      //           Get.updateLocale(const Locale('zh', 'CN'));
-                      //         },
-                      //       ),
-                      //     ],
-                      //   );
-                      // }),
                       isExpanded:
                           panelControllers[4]?.isExpanded.value ?? false,
                     ),
