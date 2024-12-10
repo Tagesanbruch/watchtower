@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -8,9 +9,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 // import 'package:share_extend/share_extend.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:dio/dio.dart' as dio_package;
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+import '../common/global.dart';
 import '../constants.dart';
 import '../keys.dart';
 import '../record_page/record_controller.dart';
@@ -110,25 +113,43 @@ class ViewRecordController extends GetxController {
   }
 
   Future<void> uploadFile(File file) async {
-    const url = "$serverurl/upload";
+    const url = "$serverurl/files/upload";
     final username = "abc";
+    String? token = Global.profile.token;
+    final dio = dio_package.Dio();
 
-    final request = http.MultipartRequest('POST', Uri.parse(url))
-      ..fields['username'] = username
-      ..fields['secretkey'] = secretKey
-      ..files.add(await http.MultipartFile.fromPath('file', file.path,
-          contentType: MediaType('text', 'csv')));
+    dio.options.headers[HttpHeaders.authorizationHeader] = "Bearer $token";
+    dio_package.FormData formData = dio_package.FormData.fromMap({
+      'username': username,
+      'secretkey': secretKey,
+      'file': await dio_package.MultipartFile.fromFile(file.path,
+          filename: file.path.split('/').last,
+          contentType: MediaType('text', 'csv')),
+      'authorization': Global.profile.token,
+    });
 
     try {
-      final response = await request.send().timeout(const Duration(seconds: 10));
+      final response = await dio.post(url,
+          data: formData,
+          options: dio_package.Options(
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            sendTimeout: const Duration(seconds: 10),
+          ));
+
       if (response.statusCode == 200) {
         snackbar("Success", 'File uploaded successfully');
       } else {
         snackbar("Network Error",
             'File upload failed with status: ${response.statusCode}');
       }
-    } on TimeoutException catch (_) {
-      snackbar("Network Error", 'File upload failed: connection timeout');
+    } on dio_package.DioException catch (e) {
+      if (e.type == dio_package.DioExceptionType.sendTimeout) {
+        snackbar("Network Error", 'File upload failed: connection timeout');
+      } else {
+        snackbar("Network Error", 'File upload failed: ${e.message}');
+      }
     }
   }
 

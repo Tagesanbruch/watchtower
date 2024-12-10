@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/index.dart';
+import '../web_request/web_request.dart';
 
 const _themes = <MaterialColor>[
   Colors.blue,
@@ -23,7 +24,7 @@ class Global {
   static List<MaterialColor> get themes => _themes;
 
   static bool get isRelease => const bool.fromEnvironment("dart.vm.product");
-
+  final globalDio = Dio();
   static Future init() async {
     WidgetsFlutterBinding.ensureInitialized();
     _prefs = await SharedPreferences.getInstance();
@@ -43,7 +44,7 @@ class Global {
       ..maxAge = 3600
       ..maxCount = 100;
 
-    // Git.init();
+    webinfo.init();
   }
 
   static saveProfile() => _prefs.setString("profile", jsonEncode(profile.toJson()));

@@ -50,8 +50,8 @@ class webinfo {
     String header = base64.encode(utf8.encode("token:$token"));
     try {
       EasyLoading.show(status: "Logining...");
-      var response = await dio.get(
-        "/login",
+      var response = await dio.post(
+        "/auth/login",
         data: {
           "username": username,
           "password": pwd,
@@ -68,6 +68,7 @@ class webinfo {
       dio.options.headers[HttpHeaders.authorizationHeader] = response.data["token"];
       NetCache().cache.clear();
       Global.profile.token = response.data["token"];
+      print("token: ${Global.profile.token}");
       EasyLoading.showSuccess('Success.');
       return User.fromJson(response.data);
     } on DioException catch (e) {
@@ -82,13 +83,15 @@ class webinfo {
 
   Future<void> register(String username, String pwd) async {
     //TODO: create a new data structure instead of void
+    String nickname = "Nickname_"+ username.substring(0, 4);
     try {
       EasyLoading.show(status: "Registering...");
       var response = await dio.post(
-        "/register",
+        "/auth/register",
         data: {
           "username": username,
           "password": pwd,
+          "nickname": nickname,
         },
       );
       EasyLoading.showSuccess('Success.');
