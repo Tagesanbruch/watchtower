@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:csv/csv.dart';
@@ -117,5 +118,22 @@ class MockPageController extends GetxController {
           annotations: detectResult);
       await recordController.addRecord(record);
     }
+  }
+
+  Future<void> addSineWaveToDB() async {
+    final int length = 1024;
+    final double frequency = 1.0;
+    final double samplingRate = 1000.0; // 1000 Hz
+    final List<ECGData> data = List.generate(length, (index) {
+      double time = index / samplingRate;
+      double value = sin(2 * pi * frequency * time);
+      return ECGData(index, value);
+    });
+
+    final detectResult = bench.detectWithPt(data);
+    final record = Record(DateTime.now(),
+        Duration(milliseconds: data.length * 1000 ~/ bench.fs), data,
+        annotations: detectResult);
+    await recordController.addRecord(record);
   }
 }

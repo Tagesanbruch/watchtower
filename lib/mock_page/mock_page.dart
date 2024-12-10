@@ -61,6 +61,12 @@ class MockPage extends StatelessWidget {
                     Get.toNamed("/respiratory");
                   },
                   child: Text("Respiration Rate Demo".tr)),
+              const SizedBox(height: 10),
+              //addSineWaveToDB
+              FilledButton(
+                  onPressed: () async =>
+                      awaitWithOverlay(controller.addSineWaveToDB),
+                  child: Text("addSineWaveToDB".tr)),
             ])));
   }
 }
