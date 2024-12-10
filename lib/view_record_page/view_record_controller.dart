@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -6,8 +7,12 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 // import 'package:share_extend/share_extend.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../constants.dart';
+import '../keys.dart';
 import '../record_page/record_controller.dart';
 import '../utils.dart';
 
@@ -77,35 +82,55 @@ class ViewRecordController extends GetxController {
 
   Future<void> promptSaveCurrentRecord() async {
     try {
-      // final String? path = (await FilePicker.platform.saveFile(
-      //   dialogTitle: "Select save location",
-      //   fileName: "record.txt",
-      //   type: FileType.custom,
-      //   allowedExtensions: ["txt"],
-      // ));
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String path = appDocDir.path;
-      // if (path != null) {
-        final startDisplay = dateFormatterFile.format(record.startTime);
-        final file = File('$path/$startDisplay.csv');
-        final buffer = StringBuffer();
+      final startDisplay = dateFormatterFile.format(record.startTime);
+      final file = File('$path/$startDisplay.csv');
+      final buffer = StringBuffer();
+      buffer.writeln("timestamp,ECG");
+      for (var data in record.data) {
+        buffer.writeln("${data.timestamp}, ${data.value}");
+      }
+      await file.writeAsString(buffer.toString());
 
-        // Assuming the headers are the same as in the promptLoadCorrectAnnotations function
-        buffer.writeln("timestamp,ECG");
+      try {
+        EasyLoading.show(status: "Uploading...");
+        await uploadFile(file);
+        EasyLoading.showSuccess('Success Upload.');
+      } catch (e) {
+        // snackbar("Error", 'File upload failed: $e');
+        EasyLoading.showError('Failed Upload: $e');
+      }
 
-        for (var data in record.data) {
-          buffer.writeln("${data.timestamp}, ${data.value}"); // Add other data fields if necessary
-        }
-
-        await file.writeAsString(buffer.toString());
-        // Share the file
-        await Share.shareXFiles([XFile(file.path)], text: 'record file');
-        snackbar("Success", "Record saved successfully.");
+      // await Share.shareXFiles([XFile(file.path)], text: 'record file');
+      // snackbar("Success", "Record saved successfully.");
     } on PlatformException catch (e) {
       snackbar("Error", "Failed to open file dialog: $e");
     }
   }
 
+  Future<void> uploadFile(File file) async {
+    const url = "$serverurl/upload";
+    final username = "abc";
+
+    final request = http.MultipartRequest('POST', Uri.parse(url))
+      ..fields['username'] = username
+      ..fields['secretkey'] = secretKey
+      ..files.add(await http.MultipartFile.fromPath('file', file.path,
+          contentType: MediaType('text', 'csv')));
+
+    try {
+      final response = await request.send().timeout(const Duration(seconds: 10));
+      if (response.statusCode == 200) {
+        snackbar("Success", 'File uploaded successfully');
+      } else {
+        snackbar("Network Error",
+            'File upload failed with status: ${response.statusCode}');
+      }
+    } on TimeoutException catch (_) {
+      snackbar("Network Error", 'File upload failed: connection timeout');
+    }
+  }
 
   int get timestampStart => record.data.first.timestamp;
   int get timestampEnd => timestampStart + displayTimestampRange;
