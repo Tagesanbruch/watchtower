@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:watchtower/common/global.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 
 // import 'l10n/localization_intl.dart';
@@ -17,7 +18,6 @@ import 'navigation.dart';
 Future main() async {
   /// initialize a few common controllers, defined in constants.dart
   initGlobalControllers();
-
   /// sqflite quirks
   /// on Android, the SQLite lib provided by system doesn't play well with BLOB data
   /// we ship our own libs with sqlite3_flutter_libs
@@ -25,6 +25,9 @@ Future main() async {
     sqfliteFfiInit();
   }
   databaseFactory = databaseFactoryFfi;
+  Global.init();
+  Get.put(UserModel());
+  Get.put(ThemeModel());
 
   /// render UI
   runApp(App());

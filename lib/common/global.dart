@@ -41,8 +41,8 @@ class Global {
 
     profile.cache = profile.cache ?? CacheConfig()
       ..enable = true
-      ..maxAge = 3600
-      ..maxCount = 100;
+      ..maxAge = 36000
+      ..maxCount = 1000;
 
     webinfo.init();
   }
@@ -70,8 +70,8 @@ class UserModel extends ProfileChangeNotifier {
   bool get isLogin => _profile.user != null;
 
   set user(User user) {
-    if (user.login != _profile.user?.login) {
-      _profile.lastLogin = _profile.user?.login;
+    if (user.username != _profile.user?.username) {
+      _profile.lastLogin = _profile.user?.username;
       _profile.user = user;
       notifyListeners();
     }
