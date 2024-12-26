@@ -34,6 +34,9 @@ class SignalController extends GetxController {
         }
         final connectionState = eventArgs.connectionState;
         this.connectionState.value = connectionState;
+        if (connectionState == false) {
+          characteristicNotifiedSubscription.cancel();
+        }
       },
     );
     characteristicNotifiedSubscription =
@@ -60,21 +63,25 @@ class SignalController extends GetxController {
             if (!bufferController.leadIsOff.value) {
               bufferController.extend(data);
             }
-          }else if(packet[0] == 23) {
+          } else if (packet[0] == 23) {
             //0x17 -- RR interval
             final rrData = RRData();
             rrData.timestamp = DateTime.now().millisecondsSinceEpoch;
-            rrData.rrInterval = (packet[1] * 256 * 256 * 256 + packet[2] * 256 * 256 + packet[3] * 256 + packet[4]) * 1000 ~/ 32768;
+            rrData.rrInterval = (packet[1] * 256 * 256 * 256 +
+                    packet[2] * 256 * 256 +
+                    packet[3] * 256 +
+                    packet[4]) *
+                1000 ~/
+                32768;
             rrData.index = bufferController.rrIntervalBuffer.length;
-            if(bufferController.rrIntervalBuffer.isEmpty){
+            if (bufferController.rrIntervalBuffer.isEmpty) {
               bufferController.rrIntervalBufferStart.value = rrData.timestamp;
             }
             // bufferController.addRR(rrData);
             bufferController.rrIntervalBuffer.add(rrData);
             bufferController.averageOfLast50RRIntervalsCalc();
             print("RR interval: ${rrData.rrInterval}");
-          }
-          else{
+          } else {
             print("Unknown packet: $packet");
           }
         } else if (eventArgs.characteristic.uuid == targetBATCharacteristic) {
@@ -83,18 +90,14 @@ class SignalController extends GetxController {
           bufferController.heartrateLevel.value = packet[1];
         } else if (eventArgs.characteristic.uuid == targetIMUCharacteristic) {
           final imuData = IMUData.fromPacket(packet);
-          bufferController.extendIMU(imuData);
+          if (!bufferController.leadIsOff.value) {
+            bufferController.extendIMU(imuData);
+          }
         }
       },
     );
 
     runZonedGuarded(connect, onCrashed);
-  }
-
-  @override
-  void onClose() {
-    bufferController.reset();
-    super.onClose();
   }
 
   void onCrashed(Object error, StackTrace stackTrace) {
@@ -185,7 +188,6 @@ class SignalController extends GetxController {
         .setCharacteristicNotifyState(targetHR, state: true);
     await CentralManager.instance
         .setCharacteristicNotifyState(targetIMU, state: true);
-
   }
 
   Future<void> sendBLE(String message) async {
@@ -215,6 +217,7 @@ class SignalController extends GetxController {
   }
 
   void disconnect() async {
+    // CentralManager.instance.characteristicNotified stop listen
     await CentralManager.instance.disconnect(device).onError(
       (error, stackTrace) {
         snackbar("Error", "Failed to connect to device: $error");

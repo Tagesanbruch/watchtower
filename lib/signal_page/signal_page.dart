@@ -33,6 +33,7 @@ class SignalPage extends StatelessWidget {
         onPopInvoked: (didPop) async {
           if (!target.isMock) {
             if (signalController!.connectionState.value) {
+              
               await CentralManager.instance
                   .disconnect(signalController!.device);
             }
