@@ -237,38 +237,52 @@ class Graph extends StatelessWidget {
                     // }
 
                     /// fresh frames
-                    List<ECGData> bufferList = ListSlice(buffer.toList(), 0,
-                        (graphBufferLength * 2 ~/ 3)); //Slice to adapted index
+                    if (buffer.length > graphBufferLength * 2 ~/ 3) {
+                      List<ECGData> bufferList = ListSlice(
+                          buffer.toList(),
+                          0,
+                          (graphBufferLength *
+                              2 ~/
+                              3)); //Slice to adapted index
 
-                    List<ECGData> firstPart = [];
-                    List<ECGData> secondPart = [];
-                    int splitIndex = bufferList.indexWhere((item) {
-                      int currentIndex = bufferList.indexOf(item);
-                      return currentIndex < bufferList.length - 1 &&
-                          bufferList[currentIndex + 1].index < item.index;
-                    });
+                      List<ECGData> firstPart = [];
+                      List<ECGData> secondPart = [];
+                      int splitIndex = bufferList.indexWhere((item) {
+                        int currentIndex = bufferList.indexOf(item);
+                        return currentIndex < bufferList.length - 1 &&
+                            bufferList[currentIndex + 1].index < item.index;
+                      });
 
-                    if (splitIndex != -1) {
-                      firstPart = bufferList.sublist(0, splitIndex + 1);
-                      secondPart = bufferList.sublist(splitIndex + 1);
-                    } else {
-                      firstPart = bufferList;
-                    }
+                      if (splitIndex != -1) {
+                        firstPart = bufferList.sublist(0, splitIndex + 1);
+                        secondPart = bufferList.sublist(splitIndex + 1);
+                      } else {
+                        firstPart = bufferList;
+                      }
 
-                    data.add(charts.Series<ECGData, int>(
-                      id: "firstFresh",
-                      domainFn: (ECGData item, _) => item.index,
-                      measureFn: (ECGData item, _) => item.value,
-                      data: firstPart,
-                      colorFn: (_, __) => freshColor,
-                    ));
-
-                    if (secondPart.isNotEmpty) {
                       data.add(charts.Series<ECGData, int>(
-                        id: "secondFresh",
+                        id: "firstFresh",
                         domainFn: (ECGData item, _) => item.index,
                         measureFn: (ECGData item, _) => item.value,
-                        data: secondPart,
+                        data: firstPart,
+                        colorFn: (_, __) => freshColor,
+                      ));
+
+                      if (secondPart.isNotEmpty) {
+                        data.add(charts.Series<ECGData, int>(
+                          id: "secondFresh",
+                          domainFn: (ECGData item, _) => item.index,
+                          measureFn: (ECGData item, _) => item.value,
+                          data: secondPart,
+                          colorFn: (_, __) => freshColor,
+                        ));
+                      }
+                    } else{
+                      data.add(charts.Series<ECGData, int>(
+                        id: "fresh",
+                        domainFn: (ECGData item, _) => item.index,
+                        measureFn: (ECGData item, _) => item.value,
+                        data: buffer.toList(),
                         colorFn: (_, __) => freshColor,
                       ));
                     }
@@ -411,7 +425,7 @@ class Graph extends StatelessWidget {
                   }
                   final List<charts.Series<IMUData, int>> data = [
                     charts.Series<IMUData, int>(
-                      id: "AccX",
+                      id: "AccXFirst",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accX,
                       data: firstPart,
@@ -419,7 +433,7 @@ class Graph extends StatelessWidget {
                           charts.MaterialPalette.blue.shadeDefault,
                     ),
                     charts.Series<IMUData, int>(
-                      id: "AccX",
+                      id: "AccXSecond",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accX,
                       data: secondPart,
@@ -427,7 +441,7 @@ class Graph extends StatelessWidget {
                           charts.MaterialPalette.blue.shadeDefault,
                     ),
                     charts.Series<IMUData, int>(
-                      id: "AccY",
+                      id: "AccYFirst",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accY,
                       data: firstPart,
@@ -435,7 +449,7 @@ class Graph extends StatelessWidget {
                           charts.MaterialPalette.red.shadeDefault,
                     ),
                     charts.Series<IMUData, int>(
-                      id: "AccY",
+                      id: "AccYSecond",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accY,
                       data: secondPart,
@@ -443,7 +457,7 @@ class Graph extends StatelessWidget {
                           charts.MaterialPalette.red.shadeDefault,
                     ),
                     charts.Series<IMUData, int>(
-                      id: "AccZ",
+                      id: "AccZFirst",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accZ,
                       data: firstPart,
@@ -451,7 +465,7 @@ class Graph extends StatelessWidget {
                           charts.MaterialPalette.green.shadeDefault,
                     ),
                     charts.Series<IMUData, int>(
-                      id: "AccZ",
+                      id: "AccZSecond",
                       domainFn: (IMUData item, _) => item.index,
                       measureFn: (IMUData item, _) => item.accZ,
                       data: secondPart,

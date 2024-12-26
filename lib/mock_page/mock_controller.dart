@@ -21,7 +21,7 @@ const previousFileKey = "PreviousFile";
 class MockPageController extends GetxController {
   final BufferController bufferController = Get.find();
   final RecordController recordController = Get.find();
-
+  // TODO: IMU data add
   var previousFile = "".obs;
 
   @override
@@ -86,7 +86,7 @@ class MockPageController extends GetxController {
       // TODO: decide detector
       final detectResult = bench.detectWithPt(data);
       final record = Record(DateTime.now(),
-          Duration(milliseconds: data.length * 1000 ~/ bench.fs), data,
+          Duration(milliseconds: data.length * 1000 ~/ bench.fs), data, [],
           annotations: detectResult);
       await recordController.addRecord(record);
     }
@@ -114,7 +114,7 @@ class MockPageController extends GetxController {
       // TODO: decide detector
       final detectResult = bench.detectWithPt(data);
       final record = Record(DateTime.now(),
-          Duration(milliseconds: data.length * 1000 ~/ bench.fs), data,
+          Duration(milliseconds: data.length * 1000 ~/ bench.fs), data, [],
           annotations: detectResult);
       await recordController.addRecord(record);
     }
@@ -132,7 +132,7 @@ class MockPageController extends GetxController {
 
     final detectResult = bench.detectWithPt(data);
     final record = Record(DateTime.now(),
-        Duration(milliseconds: data.length * 1000 ~/ bench.fs), data,
+        Duration(milliseconds: data.length * 1000 ~/ bench.fs), data, [],
         annotations: detectResult);
     await recordController.addRecord(record);
   }

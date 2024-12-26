@@ -22,9 +22,10 @@ class Record {
   final DateTime startTime;
   final Duration duration;
   final List<ECGData> data;
+  final List<IMUData> dataIMU;
   final List<int> annotations;
 
-  Record(this.startTime, this.duration, this.data,
+  Record(this.startTime, this.duration, this.data, this.dataIMU,
       {this.annotations = const []});
 
   Map<String, Object?> toMap() {
@@ -32,6 +33,7 @@ class Record {
       'start': startTime.millisecondsSinceEpoch,
       'duration': duration.inMilliseconds,
       'data': ECGData.serialize(data),
+      'dataIMU': IMUData.serialize(dataIMU),
       'annotations': serializeListToInt32(annotations),
     };
   }
@@ -67,7 +69,7 @@ class RecordController extends GetxController {
       join(docsDirectory.path, dbName),
       onCreate: (db, version) {
         return db.execute(
-          'CREATE TABLE $tableName(id INTEGER PRIMARY KEY, start INTEGER, duration INTEGER, data BLOB, annotations BLOB)',
+          'CREATE TABLE $tableName(id INTEGER PRIMARY KEY, start INTEGER, duration INTEGER, data BLOB, dataIMU BLOB, annotations BLOB)',
         );
       },
       version: 3,
@@ -118,7 +120,7 @@ class RecordController extends GetxController {
               'annotations': annotations as Uint8List
             } in recordMaps)
           Record(DateTime.fromMillisecondsSinceEpoch(startTime),
-              Duration(milliseconds: duration), [],
+              Duration(milliseconds: duration), [], [], 
               annotations: deserializeInt32ToList(annotations)),
       ];
 
@@ -144,10 +146,11 @@ class RecordController extends GetxController {
       'start': startTime as int,
       'duration': duration as int,
       'data': data as Uint8List,
+      'dataIMU': dataIMU as Uint8List,
       'annotations': annotations as Uint8List,
     } = resultMap.first;
     return Record(DateTime.fromMillisecondsSinceEpoch(startTime),
-        Duration(milliseconds: duration), ECGData.deserialize(data),
+        Duration(milliseconds: duration), ECGData.deserialize(data), IMUData.deserialize(dataIMU),
         annotations: deserializeInt32ToList(annotations));
   }
 }

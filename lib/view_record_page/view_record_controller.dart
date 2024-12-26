@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -88,17 +89,27 @@ class ViewRecordController extends GetxController {
       Directory appDocDir = await getApplicationDocumentsDirectory();
       String path = appDocDir.path;
       final startDisplay = dateFormatterFile.format(record.startTime);
-      final file = File('$path/$startDisplay.csv');
+      final fileEcg = File('$path/ECG_$startDisplay.csv');
+      final fileImu = File('$path/IMU_$startDisplay.csv');
       final buffer = StringBuffer();
       buffer.writeln("timestamp,ECG");
       for (var data in record.data) {
         buffer.writeln("${data.timestamp}, ${data.value}");
       }
-      await file.writeAsString(buffer.toString());
+      await fileEcg.writeAsString(buffer.toString());
+
+      final bufferImu = StringBuffer();
+      bufferImu.writeln("timestamp,IMU");
+      for (var data in record.dataIMU) {
+        int value = (data.accX << 32 | data.accY << 16 | data.accZ);
+        bufferImu.writeln("${data.timestamp}, $value");
+      }
+      await fileImu.writeAsString(bufferImu.toString());
 
       try {
         EasyLoading.show(status: "Uploading...");
-        await uploadFile(file);
+        await uploadFile(fileEcg);
+        await uploadFile(fileImu);
         EasyLoading.showSuccess('Success Upload.');
       } catch (e) {
         // snackbar("Error", 'File upload failed: $e');
