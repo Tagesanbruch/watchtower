@@ -81,6 +81,9 @@ class SignalController extends GetxController {
           bufferController.batteryLevel.value = packet[0];
         } else if (eventArgs.characteristic.uuid == targetHRCharacteristic) {
           bufferController.heartrateLevel.value = packet[1];
+        } else if (eventArgs.characteristic.uuid == targetIMUCharacteristic) {
+          final imuData = IMUData.fromPacket(packet);
+          bufferController.extendIMU(imuData);
         }
       },
     );
@@ -163,6 +166,7 @@ class SignalController extends GetxController {
     if (target == null ||
         targetBAT == null ||
         targetHR == null ||
+        targetIMU == null ||
         this.targetMessageTX == null) {
       Get.defaultDialog(
           title: "Error",
@@ -179,6 +183,9 @@ class SignalController extends GetxController {
         .setCharacteristicNotifyState(targetBAT, state: true);
     await CentralManager.instance
         .setCharacteristicNotifyState(targetHR, state: true);
+    await CentralManager.instance
+        .setCharacteristicNotifyState(targetIMU, state: true);
+
   }
 
   Future<void> sendBLE(String message) async {

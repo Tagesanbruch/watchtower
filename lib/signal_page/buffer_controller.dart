@@ -38,6 +38,8 @@ class BufferController extends GetxController
   /// in order to achieve a wipe-off/overwrite effect
   final Queue<ECGData> buffer = Queue();
 
+  final Queue<IMUData> imuBuffer = Queue();
+
   /// R-R interval buffer
   final Queue<RRData> rrIntervalBuffer = Queue();
   int get rrIntervalBufferEnd => rrIntervalBuffer.length;
@@ -141,6 +143,17 @@ class BufferController extends GetxController
     }
   }
 
+  void addIMU(IMUData item){
+    if (imuBuffer.length >= graphIMUBufferLength){
+      imuBuffer.removeFirst();
+    }
+    imuBuffer.add(item);
+  }
+
+  void cleanIMUBuffer(){
+    imuBuffer.clear();
+  }
+
   void averageOfLast50RRIntervalsCalc(){
     final count = rrIntervalBuffer.length;
     final start = count > 50 ? count - 50 : 0;
@@ -178,6 +191,15 @@ class BufferController extends GetxController
     lastFreshTimestamp = items.last.timestamp;
 
     process();
+  }
+
+  void extendIMU(List<IMUData> items){
+    for (IMUData item in items){
+      addIMU(item);
+    }
+    // if (state() == BufferControllerState.recording){
+    //   recordBuffer.addAll(items);
+    // }
   }
 
   /// represents how full is the buffer

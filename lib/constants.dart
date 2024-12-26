@@ -28,6 +28,8 @@ const int delayMs = 1000 ~/ fs * packLength;
 
 const int graphBufferLength = 3000;
 
+const int graphIMUBufferLength = 300;
+
 const int peakBufferCapacity = 1000;
 
 void initGlobalControllers() {

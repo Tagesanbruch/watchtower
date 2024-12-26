@@ -63,6 +63,49 @@ import '../algorithm/resp_algorithm.dart';
 /// the length of the hidden segment
 const hiddenLength = packLength;
 
+List<charts.Series<SineWaveData, int>> _createSineWaveData() {
+  final List<SineWaveData> sineWave1 = [];
+  final List<SineWaveData> sineWave2 = [];
+  final List<SineWaveData> sineWave3 = [];
+
+  for (int i = 0; i < 100; i++) {
+    sineWave1.add(SineWaveData(i, sin(i * 0.1)));
+    sineWave2.add(SineWaveData(i, sin(i * 0.1 + pi / 3)));
+    sineWave3.add(SineWaveData(i, sin(i * 0.1 + 2 * pi / 3)));
+  }
+
+  return [
+    charts.Series<SineWaveData, int>(
+      id: "SineWave1",
+      domainFn: (SineWaveData item, _) => item.index,
+      measureFn: (SineWaveData item, _) => item.value,
+      data: sineWave1,
+      colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+    ),
+    charts.Series<SineWaveData, int>(
+      id: "SineWave2",
+      domainFn: (SineWaveData item, _) => item.index,
+      measureFn: (SineWaveData item, _) => item.value,
+      data: sineWave2,
+      colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+    ),
+    charts.Series<SineWaveData, int>(
+      id: "SineWave3",
+      domainFn: (SineWaveData item, _) => item.index,
+      measureFn: (SineWaveData item, _) => item.value,
+      data: sineWave3,
+      colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
+    ),
+  ];
+}
+
+class SineWaveData {
+  final int index;
+  final double value;
+
+  SineWaveData(this.index, this.value);
+}
+
 class Graph extends StatelessWidget {
   final BufferController controller = Get.find();
   Graph({super.key});
@@ -242,8 +285,7 @@ class Graph extends StatelessWidget {
                             color: charts.MaterialPalette.black,
                           ),
                           lineStyle: charts.LineStyleSpec(
-                            color:
-                                charts.MaterialPalette.green.shadeDefault,
+                            color: charts.MaterialPalette.green.shadeDefault,
                           ),
                         ),
                         tickProviderSpec:
@@ -266,13 +308,13 @@ class Graph extends StatelessWidget {
                             color: charts.MaterialPalette.black,
                           ),
                           lineStyle: charts.LineStyleSpec(
-                            color:
-                                charts.MaterialPalette.green.shadeDefault,
+                            color: charts.MaterialPalette.green.shadeDefault,
                           ),
                         ),
                         tickProviderSpec:
                             const charts.StaticNumericTickProviderSpec(
                           <charts.TickSpec<num>>[
+                            /// Tick => 1.0 -- 5.0 mV
                             charts.TickSpec(-1.0),
                             charts.TickSpec(-0.9),
                             charts.TickSpec(-0.8),
@@ -337,6 +379,122 @@ class Graph extends StatelessWidget {
                     ],
                   ))
             ])),
+        Card(
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Text("IMU Data", style: Theme.of(context).textTheme.titleMedium),
+              SizedBox(
+                height: 300,
+                child: GetBuilder<BufferController>(builder: (controller) {
+                  final imuBuffer = controller.imuBuffer;
+                  final imuList = imuBuffer.toList();
+                  final List<IMUData> accData = [];
+
+                  accData.addAll(imuList);
+
+                  List<IMUData> bufferList =
+                      ListSlice(imuList, 0, (imuBuffer.length));
+                  List<IMUData> firstPart = [];
+                  List<IMUData> secondPart = [];
+                  int splitIndex = bufferList.indexWhere((item) {
+                    int currentIndex = bufferList.indexOf(item);
+                    return currentIndex < bufferList.length - 1 &&
+                        bufferList[currentIndex + 1].index < item.index;
+                  });
+
+                  if (splitIndex != -1) {
+                    firstPart = bufferList.sublist(0, splitIndex + 1);
+                    secondPart = bufferList.sublist(splitIndex + 1);
+                  } else {
+                    firstPart = bufferList;
+                  }
+                  final List<charts.Series<IMUData, int>> data = [
+                    charts.Series<IMUData, int>(
+                      id: "AccX",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accX,
+                      data: firstPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.blue.shadeDefault,
+                    ),
+                    charts.Series<IMUData, int>(
+                      id: "AccX",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accX,
+                      data: secondPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.blue.shadeDefault,
+                    ),
+                    charts.Series<IMUData, int>(
+                      id: "AccY",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accY,
+                      data: firstPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.red.shadeDefault,
+                    ),
+                    charts.Series<IMUData, int>(
+                      id: "AccY",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accY,
+                      data: secondPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.red.shadeDefault,
+                    ),
+                    charts.Series<IMUData, int>(
+                      id: "AccZ",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accZ,
+                      data: firstPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.green.shadeDefault,
+                    ),
+                    charts.Series<IMUData, int>(
+                      id: "AccZ",
+                      domainFn: (IMUData item, _) => item.index,
+                      measureFn: (IMUData item, _) => item.accZ,
+                      data: secondPart,
+                      colorFn: (_, __) =>
+                          charts.MaterialPalette.green.shadeDefault,
+                    ),
+                  ];
+
+                  return charts.LineChart(
+                    data,
+                    animate: false,
+                    defaultRenderer:
+                        charts.LineRendererConfig(includePoints: true),
+                    domainAxis: charts.NumericAxisSpec(
+                      viewport: charts.NumericExtents(0, imuBuffer.length),
+                      renderSpec: charts.GridlineRendererSpec(
+                        labelStyle: const charts.TextStyleSpec(
+                          fontSize: 12,
+                          color: charts.MaterialPalette.black,
+                        ),
+                        lineStyle: charts.LineStyleSpec(
+                          color: charts.MaterialPalette.gray.shadeDefault,
+                        ),
+                      ),
+                    ),
+                    primaryMeasureAxis: charts.NumericAxisSpec(
+                      viewport: const charts.NumericExtents(-1000, 1000),
+                      renderSpec: charts.GridlineRendererSpec(
+                        labelStyle: const charts.TextStyleSpec(
+                          fontSize: 12,
+                          color: charts.MaterialPalette.black,
+                        ),
+                        lineStyle: charts.LineStyleSpec(
+                          color: charts.MaterialPalette.gray.shadeDefault,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
         Card(
             child: Column(children: [
           const SizedBox(
@@ -450,6 +608,7 @@ class Graph extends StatelessWidget {
           title: const Text("Clear RRInterval(Debug)"),
           onTap: () {
             controller.rrIntervalBuffer.clear();
+            controller.imuBuffer.clear();
           },
         ),
         const SizedBox(
