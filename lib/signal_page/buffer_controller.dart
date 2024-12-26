@@ -113,6 +113,9 @@ class BufferController extends GetxController
     lastFreshIndex = 0;
     firstFreshIndex = 0;
     buffer.clear();
+    rrIntervalBuffer.clear();
+    rrIntervalBufferStart.value = 0;
+    imuBuffer.clear();
     interval = defaultInterval;
 
     processData.clear();
@@ -165,11 +168,12 @@ class BufferController extends GetxController
   /// pushes a list of frames into the buffer
   void extend(List<ECGData> items) {
     // TODO: optimize this
+
     for (ECGData item in items) {
       _add(item);
     }
     if (state() == BufferControllerState.recording) {
-      recordBuffer.addAll(items);
+      recordBufferECG.addAll(items);
     }
 
     final now = DateTime.now();
@@ -197,9 +201,9 @@ class BufferController extends GetxController
     for (IMUData item in items){
       addIMU(item);
     }
-    // if (state() == BufferControllerState.recording){
-    //   recordBuffer.addAll(items);
-    // }
+    if (state() == BufferControllerState.recording){
+      recordBufferIMU.addAll(items);
+    }
   }
 
   /// represents how full is the buffer
@@ -300,7 +304,8 @@ class BufferController extends GetxController
 
   /// a timer for displaying record duration
   Timer? recordDurationTimer;
-  final List<ECGData> recordBuffer = [];
+  final List<ECGData> recordBufferECG = [];
+  final List<IMUData> recordBufferIMU = [];
 
   void startRecord() {
     recordStartTime = DateTime.now();
@@ -313,14 +318,16 @@ class BufferController extends GetxController
     state.value = BufferControllerState.recording;
     final recordStopTime = DateTime.now();
     final duration = recordStopTime.difference(recordStartTime!);
-    final record = Record(recordStartTime!, duration, recordBuffer);
+    final record = Record(recordStartTime!, duration, recordBufferECG, recordBufferIMU);
 
     final RecordController recordController = Get.find();
     await recordController.addRecord(record);
 
     state.value = BufferControllerState.normal;
     snackbar("Info", "Record successfully saved.");
-    recordBuffer.clear();
+    recordBufferECG.clear();
+    recordBufferIMU.clear();
+    recordDuration.value = 0;
     recordDurationTimer!.cancel();
     recordDurationTimer = null; // TODO: is this necessary?
   }
