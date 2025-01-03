@@ -9,6 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:dio/io.dart';
+import 'package:get/get.dart';
 import 'package:watchtower/models/index.dart';
 export 'package:dio/dio.dart' show DioException;
 
@@ -22,6 +23,9 @@ class webinfo {
   }
   BuildContext? context;
   late Options _options;
+  // String serverECG = serverurl;
+  late RxString serverECG = serverurl.obs;
+  
   static Dio dio = Dio(BaseOptions(
     baseUrl: serverurl,
   ));
@@ -43,6 +47,12 @@ class webinfo {
         },
       );
     }
+  }
+
+  void updateServerUrl(String newUrl) {
+    dio.options.baseUrl = newUrl;
+    serverECG.value = newUrl;
+    print("New Server URL: $newUrl");
   }
 
   Future<User> login(String username, String pwd) async {

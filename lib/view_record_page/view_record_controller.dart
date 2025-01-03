@@ -19,6 +19,7 @@ import '../constants.dart';
 import '../keys.dart';
 import '../record_page/record_controller.dart';
 import '../utils.dart';
+import '../web_request/web_request.dart';
 
 class ViewRecordController extends GetxController {
   late final Record record;
@@ -124,7 +125,9 @@ class ViewRecordController extends GetxController {
   }
 
   Future<void> uploadFile(File file) async {
-    const url = "$serverurl/files/upload";
+    final webinfo webInfo = Get.find<webinfo>();
+    String server = webInfo.serverECG.value;
+    String url = "$server/files/upload";
     final username = "abc";
     String? token = Global.profile.token;
     final dio = dio_package.Dio();

@@ -19,7 +19,7 @@ class SettingsController extends GetxController
   late final StreamSubscription stateChangedSubscription;
   late final StreamSubscription discoveredSubscription;
 
-  var webinfoInstance = webinfo();
+  final webinfo webinfoSettingInstance = Get.find<webinfo>();
 
   void onStartUp() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +47,11 @@ class SettingsController extends GetxController
     final signalController = Get.find<SignalController>();
     await signalController.sendBLE(String.fromCharCodes(clearBuffer));
     await signalController.sendBLE(commandInput);
+  }
+
+  void changeIP(String newIP) {
+    String newUrl = "http://$newIP:8090";
+    webinfoSettingInstance.updateServerUrl(newUrl);
   }
 
   @override

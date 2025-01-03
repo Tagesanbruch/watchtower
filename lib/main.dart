@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:watchtower/common/global.dart';
+import 'package:watchtower/web_request/web_request.dart';
 // import 'package:flutter_localizations/flutter_localizations.dart';
 
 // import 'l10n/localization_intl.dart';
@@ -28,6 +29,7 @@ Future main() async {
   Global.init();
   Get.put(UserModel());
   Get.put(ThemeModel());
+  Get.put(webinfo());
 
   /// render UI
   runApp(App());

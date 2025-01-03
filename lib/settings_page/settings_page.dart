@@ -54,6 +54,7 @@ class SettingsPage extends StatelessWidget {
     2: PanelController(),
     3: PanelController(),
     4: PanelController(),
+    5: PanelController(),
   };
 
   @override
@@ -267,6 +268,49 @@ class SettingsPage extends StatelessWidget {
                       ),
                       isExpanded:
                           panelControllers[4]?.isExpanded.value ?? false,
+                    ),
+                    ExpansionPanel(
+                      canTapOnHeader: true,
+                      headerBuilder: (BuildContext context, bool isExpanded) {
+                        return SizedBox(
+                          height: 50,
+                          child: ListTile(
+                            title: Text("IP Change".tr),
+                          ),
+                        );
+                      },
+                      body: Obx(() {
+                        TextFieldX tx = Get.put(TextFieldX());
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: tx.controller.value,
+                                onChanged: (newText) => tx.updateText(newText),
+                                decoration: InputDecoration(
+                                  hintText: "Server IP".tr,
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                  contentPadding: const EdgeInsets.all(10.0),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.change_circle),
+                              onPressed: () {
+                                var textFieldX = Get.find<TextFieldX>();
+                                var text = textFieldX.controller.value.text;
+                                controller.changeIP(text);
+                              },
+                            ),
+                          ],
+                        );
+                      }),
+                      isExpanded:
+                          panelControllers[5]?.isExpanded.value ?? false,
                     ),
                   ],
                 )),
