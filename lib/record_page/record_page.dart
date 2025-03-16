@@ -113,6 +113,28 @@ class RecordPage extends StatelessWidget {
                       onTap: () {
                         Get.toNamed("/viewRecord", arguments: record.startTime);
                       },
+                      onLongPress: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SafeArea(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.cloud_upload),
+                                    title: const Text('Upload Record'),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      controller.uploadRecord(record.startTime);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ));
               },
               separatorBuilder: (BuildContext context, int index) =>

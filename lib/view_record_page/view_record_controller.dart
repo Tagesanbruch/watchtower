@@ -149,7 +149,7 @@ class ViewRecordController extends GetxController {
             headers: {
               'Content-Type': 'multipart/form-data',
             },
-            sendTimeout: const Duration(seconds: 10),
+            sendTimeout: const Duration(seconds: 100),
           ));
 
       if (response.statusCode == 200) {
