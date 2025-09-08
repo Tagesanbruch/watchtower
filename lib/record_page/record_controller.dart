@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -159,6 +160,49 @@ class RecordController extends GetxController {
     return Record(DateTime.fromMillisecondsSinceEpoch(startTime),
         Duration(milliseconds: duration), ECGData.deserialize(data), IMUData.deserialize(dataIMU),
         annotations: deserializeInt32ToList(annotations));
+  }
+
+  //shareRecord
+  Future<void> shareRecord(DateTime startTimeInput, String mode) async {
+    try {
+      final record = await getRecordByStartTime(startTimeInput);
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      String path = appDocDir.path;
+      final startDisplay = dateFormatterFile.format(record.startTime);
+      
+      if (mode == "ECG") {
+        final fileEcg = File('$path/ECG_$startDisplay.csv');
+        final buffer = StringBuffer();
+        buffer.writeln("timestamp,ECG");
+        for (var data in record.data) {
+          buffer.writeln("${data.timestamp}, ${data.value}");
+        }
+        await fileEcg.writeAsString(buffer.toString());
+        final result = await Share.shareXFiles([XFile(fileEcg.path)], text: 'ECG record file');
+        if (result.status == ShareResultStatus.success) {
+          snackbar("Success", "Record shared successfully.");
+        } else if (result.status == ShareResultStatus.dismissed) {
+          snackbar("Cancelled", "Share was cancelled.");
+        }
+      } else if (mode == "IMU") {
+        final fileImu = File('$path/IMU_$startDisplay.csv');
+        final bufferImu = StringBuffer();
+        bufferImu.writeln("timestamp,IMU");
+        for (var data in record.dataIMU) {
+          int value = (data.accX << 32 | data.accY << 16 | data.accZ);
+          bufferImu.writeln("${data.timestamp}, $value");
+        }
+        await fileImu.writeAsString(bufferImu.toString());
+        final result = await Share.shareXFiles([XFile(fileImu.path)], text: 'IMU record file');
+        if (result.status == ShareResultStatus.success) {
+          snackbar("Success", "Record shared successfully.");
+        } else if (result.status == ShareResultStatus.dismissed) {
+          snackbar("Cancelled", "Share was cancelled.");
+        }
+      }
+    } catch (e) {
+      snackbar("Error", "Failed to share record: $e");
+    }
   }
 
   Future<void> uploadRecord(DateTime startTimeInput) async {
